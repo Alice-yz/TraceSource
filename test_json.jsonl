@@ -1,0 +1,110 @@
+
+//get_timeline
+{
+  "names": [
+    "twitter"
+  ],
+  "event": "election"
+}
+//get_topic
+{
+  "names": [
+    "twitter","weibo"
+  ],
+  "event": "election",
+  "date": "2024-03-01",
+  "cycle": 10
+}
+//get_flower
+{
+  "names": [
+    "twitter","weibo"
+  ],
+  "event": "water",
+  "date": "2023-09-01",
+  "cycle": 10
+}
+//get_flower_cloud
+{
+  "names": "weibo",
+  "event": "election",
+  "date": "2024-03-01",
+  "cycle": 10,
+  "topic": "election"
+}
+//flower_post
+{
+  "names": "twitter",
+  "event": "election",
+  "date": "2024-02-01",
+  "cycle": 1,
+  "topic": "election"
+}
+// link
+{
+  "names": "string",
+  "event": "election",
+  "date": "2024-02-01",
+  "cycle": 10,
+  "topic": "election",
+  "start": "2024-02-01",
+  "end": "2024-02-10"
+}
+//layout
+{
+  "names": ["weibo", "twitter","facebook"],
+  "event": "election",
+  "date": "2024-03-01",
+  "cycle": 10,
+  "topic": "election"
+}
+
+//
+{
+  "names": ["weibo", "twitter","facebook"],
+  "event": "election",
+  "date": "2024-02-01",
+  "cycle": 10,
+  "topic": "election"
+}
+//
+{
+  "event": "election",
+  "topic": "election",
+  "date": "2024-02-01",
+  "cycle": 10,
+  "flower_post": {
+    "twitter": ["1749159384112845285","1765396693036523717"],
+    "weibo":["1749131121114091648","1386635238986510341"]
+  }
+}
+//
+{
+  "names": [
+    "weibo"
+  ],
+  "event": "election",
+  "date": "2024-02-01",
+  "cycle": 0,
+  "source": {
+    "twitter": "1749159384112845285"
+  },
+  "target": {
+    "twitter": "1749131121114091648"
+  }
+}
+//
+{
+  "names": [
+    "weibo","twitter"
+  ],
+  "event": "election",
+  "date": "2024-04-01",
+  "cycle": 10000,
+  "source": {
+    "weibo": "2467791"
+  },
+  "target": {
+    "twitter": "2836421"
+  }
+}
