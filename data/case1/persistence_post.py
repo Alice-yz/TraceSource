@@ -1,286 +1,323 @@
 from sentence_transformers import SentenceTransformer, util
-import os
-# from utils import freq
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import Levenshtein
+from pydoc import doc
+import gensim
+from gensim import corpora
+from pprint import pprint
 import re
 import pandas as pd
 import numpy as np
-import warnings
-warnings.filterwarnings('ignore')
-# 取消pandas的警告
-pd.options.mode.chained_assignment = None
-os.environ['http_proxy'] = '127.0.0.1:7890'
-os.environ['https_proxy'] = '127.0.0.1:7890'
-model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
-######
+from utils import cal_cluster_factor as ccf
+from langdetect import detect
+import nltk
+from nltk.corpus import stopwords
+# 下载停用词
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
 
-# 查找Top 10的关键词，全是英文
-from collections import Counter
-import re
-def remove_stopwords(text, stopwords):
-    words = text.split()  # 将文本分词为单词列表
-    clean_words = [word for word in words if word not in stopwords]  # 去除停用词
-    clean_text = ' '.join(clean_words)  # 将列表中的单词重新组合成文本
-    return clean_text
-def remove_newlines(text):
-    # 将换行符替换为空格
-    if type(text) == float:
-        return ''
-    clean_text = text.replace('\n', ' ')
-    return clean_text
-def remove_urls(text):
-    url_pattern = re.compile(r'https?://\S+|www\.\S+')
-    # 将匹配到的网址替换为空字符串
-    clean_text = url_pattern.sub('', text)
-    return clean_text
-def remove_after_at(text):
-    # 匹配@符号后面的单词的正则表达式
-    after_at_pattern = re.compile(r'@\w+\s?')
-    clean_text = after_at_pattern.sub('', text)
-    return clean_text
-def remove_punctuation(text):
-    clean_text = re.sub(r'[^\w\s]', '', text)
-    return clean_text
-def convert_to_lowercase(text):
-    return text.lower()
-english_stopwords = [
-    'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself',
-    'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
-    'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these',
-    'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do',
-    'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while',
-    'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before',
-    'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again',
-    'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each',
-    'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than',
-    'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now' ,'RT' ,'weibo', 'rt' ,'cctv' ,'time',
-    'daiichi' ,'the' ,'fukushima' ,'[#' ,'#]' ,'5th'
-]
-def preprocess_text(text, stopwords):
-    text = remove_newlines(text)
-    text = remove_urls(text)
-    text = remove_after_at(text)
-    text = remove_punctuation(text)
-    text = convert_to_lowercase(text)
-    text = remove_stopwords(text, stopwords)
-    return text
-def find_top_n_words(text, n):
-    words = ' '.join(text).split()  # 将所有文本拼接成一个长字符串后分词
-    word_freq = Counter(words)  # 统计词频
-    top_n_words = word_freq.most_common(n)  # 获取词频最高的前n个单词
-    return top_n_words
+model_eng = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+model_mut = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
+def calculate_bert_similarity(text1, text2,model):
+    embeddings = model.encode([text1, text2])
+    sim = util.cos_sim(embeddings[0], embeddings[1])
+    return sim.tolist()[0][0]
+def calculate_cosine_similarity(text1, text2):
+    vectorizer = CountVectorizer()
+    corpus = [text1, text2]
+    vectors = vectorizer.fit_transform(corpus)
+    similarity_matrix = cosine_similarity(vectors)
+    return similarity_matrix[0][1]
+def find_url_from_text(text):
+    return re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text)
 
-
-def get_word_freq_list(text):
-    text = text.apply(lambda x: preprocess_text(x, english_stopwords))
-    top_words = find_top_n_words(text, 10)
-    return top_words
-
-
-
-
-def cal_RW_SCORE(A_posts, B_posts):
-    A_texts = get_word_freq_list(A_posts['text_trans'])
-    B_texts = get_word_freq_list(B_posts['text_trans'])
-    # print(A_texts, B_texts)
-    A_word_list = [word[0] for word in A_texts]
-    B_word_list = [word[0] for word in B_texts]
-    embed_A = model.encode(A_word_list, convert_to_tensor=True)
-    embed_B = model.encode(B_word_list, convert_to_tensor=True)
-    cosine_scores = util.pytorch_cos_sim(embed_A, embed_B)
-    cosine_scores = cosine_scores.cpu().numpy()
-    rw_res = []
-    for i in range(len(A_word_list)):
-        # print(f"{A_word_list[i]} <--> {B_word_list[cosine_scores[i].argmax()]}, score: {cosine_scores[i].max()}")
-        rw_res.append({
-            'source': A_word_list[i],
-            'target': B_word_list[cosine_scores[i].argmax()],
-            'score': cosine_scores[i].max()
-        })
-    if len(rw_res) == 0:
-        rw_score = 0
-    else:
-        rw_score = sum([item['score'] for item in rw_res]) / len(rw_res)
-    # print(f"rw_score: {rw_score}")
-    return rw_score, rw_res
-
-
-def cal_hashtag_score(A_posts, B_posts):
-    A_hashtags = find_hashtags(A_posts).tolist()
-    B_hashtags = find_hashtags(B_posts).tolist()
-    # 处理nan
-
-    A_hashtags_list = [item for sublist in A_hashtags for item in sublist]
-    B_hashtags_list = [item for sublist in B_hashtags for item in sublist]
-    # print(f"A_hashtags: {A_hashtags_list}")
-    # print(f"B_hashtags: {B_hashtags_list}")
-    embed_A = model.encode(A_hashtags_list, convert_to_tensor=True)
-    embed_B = model.encode(B_hashtags_list, convert_to_tensor=True)
-    if len(A_hashtags_list) == 0 or len(B_hashtags_list) == 0:
-        hashtag_score = 0
-        hashtag_res = []
-        return hashtag_score, hashtag_res
-    cosine_scores = util.pytorch_cos_sim(embed_A, embed_B)
-    cosine_scores = cosine_scores.cpu().numpy()
-    hashtag_res = []
-    for i in range(len(A_hashtags_list)):
-        hashtag_res.append({
-            'source': A_hashtags_list[i],
-            'target': B_hashtags_list[cosine_scores[i].argmax()],
-            'score': cosine_scores[i].max()
-        })
-    if len(hashtag_res) == 0:
-        hashtag_score = 0
-    else:
-        hashtag_score = sum([item['score'] for item in hashtag_res]) / len(hashtag_res)
-    # print(f"hashtag_score: {hashtag_score}")
-    # print(hashtag_res)
-    return hashtag_score, hashtag_res
-
-
-def find_hashtags(df, col='text_trans'):
-    return df[col].str.findall(r'#\w+#|\B#\w+\b')
-
-
-def find_posts_with_url(df, col='text'):
-    return df[df[col].str.contains(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',na=False)]
-
-
-def find_same_url(df, col='text'):
-    url_list = []
-    post_id_list = []
-    for index, row in df.iterrows():
-        url = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', row[col])
-        if url:
-            for u in url:
-                url_list.append(u)
-                post_id_list.append(row['post_id'])
-    return url_list, post_id_list
-
-
-def find_posts_mention_other_platform(df, platform, col='text_trans'):
-    return df[df[col].str.contains(platform, na=False)]
-
-def direct_refer(df, platform,col='text_trans'):
-    posts_num = df.shape[0]
-    if posts_num == 0:
-        return 0
-    if platform == 'weibo':
-        refer_list = ['weibo', 'Weibo','Chinese Twitter']
-    elif platform == 'twitter':
-        refer_list = ['twitter', 'Twitter','blue bird']
-    else:
-        refer_list = ['facebook', 'Facebook']
-    df_refer = df[df[col].str.contains('|'.join(refer_list), na=False)]
-    refer_num = df_refer.shape[0]
-    spread_list = ["source", "cr.", "original post", "source:", "via", "via:", "original link", "credit:", "from",
+def check_special_info(text):
+    # 返回分数以及包含的特定的词
+    special_info = ["source", "cr.", "original post", "source:", "via", "via:", "original link", "credit:", "from",
                     "from:","original link","courtesy of","reprinted from","quote form","cited from","hat tip","originally published by"]
-    df_spread = df[df[col].str.contains('|'.join(spread_list), na=False)]
-    spread_num = df_spread.shape[0]
-    # 加权求和
-    refer_score = (0.5 * refer_num + 0.5 * spread_num) /5
-    return refer_score
+    special_mention = ["twitter","bluebird","facebook","weibo","chinese twitter","Chinese Twitter","weibo.com"]
+    special_words = []
+    score = 0
+    for info in special_info:
+        if info in text:
+            score = 0.5
+            special_words.append(info)
+    for mention in special_mention:
+        if mention in text:
+            score = 1
+            special_words.append(mention)
+    return score,special_words
 
-def find_posts_with_engagement(df, threshold, col=["cnt_retweet", "cnt_agree", "cnt_comment"]):
-    return df[df[col] > threshold]
+def find_hashtags(text):
+    return re.findall(r'#\w+#|\B#\w+\b', text)
+
+def get_user_info(all_users, user_id):
+    user_info = all_users[all_users['user_id'] == user_id]
+    if user_info.empty:
+        # 最后一行是假数据
+        user_info = all_users.iloc[-1]
+    else:
+        user_info = user_info.iloc[0]
+    return user_info
 
 
-def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users,debug = False):
-    A_posts = df_data[df_data['from'] == A]
-    B_posts = df_data[df_data['from'] == B]
-    end_time = pd.to_datetime(date).strftime('%Y-%m-%d')
-    start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
-    start_time = start_time.strftime('%Y-%m-%d')
-    start_time_half = pd.to_datetime(date) - pd.Timedelta(days=cycle / 2)
-    start_time_half = start_time_half.strftime('%Y-%m-%d')
-    B_posts = B_posts[(B_posts['publish_time'] >= start_time_half) & (B_posts['publish_time'] <= end_time)]
-    # print(f"A: {A_posts.shape[0]} ,B: {B_posts.shape[0]}")
-    ##############计算sal_factor######################
-    all_A_posts = all_posts[all_posts['from'] == A]
-    all_A_posts = all_A_posts[(all_A_posts['publish_time'] >= start_time) & (all_A_posts['publish_time'] <= end_time)]
-    all_B_posts = all_posts[all_posts['from'] == B]
-    all_B_posts = all_B_posts[(all_B_posts['publish_time'] >= start_time_half) & (all_B_posts['publish_time'] <= end_time)]
-    # print(f"all_A: {all_A_posts.shape[0]} ,all_B: {all_B_posts.shape[0]}")
-    # 计算salience factor
-    if all_A_posts.shape[0] == 0 or all_B_posts.shape[0] == 0:
-        sal_factor = 0
+def cal_post_factor(post_A,post_B,df_data,self,debug=False):
+    # 首先判断谁传给谁
+    if post_A['publish_time'] > post_B['publish_time']:
+        s_post = post_B
+        t_post = post_A
     else:
-        sal_factor = (A_posts.shape[0] * B_posts.shape[0]) / (all_A_posts.shape[0] * all_B_posts.shape[0])
-    # print(f"sal_factor: {sal_factor}")
-    ##############计算A B的文本RW_SCORE #######################
-    if A_posts.shape[0] == 0 or B_posts.shape[0] == 0:
-        rw_score = 0
-        rw_res = []
+        s_post = post_A
+        t_post = post_B
+    s_platform = s_post['from']
+    t_platform = t_post['from']
+    ########### Recent Time ###########
+    s_date = pd.to_datetime(s_post['publish_time'])
+    t_date = pd.to_datetime(t_post['publish_time'])
+    time_diff = (t_date - s_date).days
+    # print(f"time_diff: {time_diff}")
+    ########### Sim words ###########
+    word_sim = calculate_bert_similarity(s_post['text_trans'], t_post['text_trans'], model_eng)
+    # print(f"sim: {word_sim}")
+    ########### Sim URL ###########
+    s_url = set(find_url_from_text(s_post['text_trans']))
+    t_url = set(find_url_from_text(t_post['text_trans']))
+    url_intersection = s_url.intersection(t_url)
+    url_union = s_url.union(t_url)
+    url_sim = len(url_intersection) / len(url_union) if len(url_union) != 0 else 0
+    # 查找same_url在s_post和t_post中的位置
+    same_url = list(url_intersection)
+    s_highlight = []
+    t_highlight = []
+    for url in same_url:
+        s_url_begin_idx = s_post['text_trans'].find(url)
+        t_url_begin_idx = t_post['text_trans'].find(url)
+        s_url_end_idx = s_url_begin_idx + len(url)
+        t_url_end_idx = t_url_begin_idx + len(url)
+        s_highlight.append({
+            "begin": int(s_url_begin_idx),
+            "end": int(s_url_end_idx)
+        })
+        t_highlight.append({
+            "begin": int(t_url_begin_idx),
+            "end": int(t_url_end_idx)
+        })
+    # print(f"s_url_index: {s_url_index}, t_url_index: {t_url_index}")
+    # print(f"url_sim: {url_sim}")
+    ########### Sim Hashtag ###########
+    s_hashtag = find_hashtags(s_post['text_trans'])
+    t_hashtag = find_hashtags(t_post['text_trans'])
+    if len(s_hashtag) != 0 and len(t_hashtag) != 0:
+        hashtag_sim = calculate_bert_similarity(' '.join(s_hashtag), ' '.join(t_hashtag), model_eng)
     else:
-        rw_score, rw_res = cal_RW_SCORE(A_posts, B_posts)
-    # print(f"rw_score: {rw_score}")
-    ##############计算A B的文本Hashtag_score#######################
-    if A_posts.shape[0] == 0 or B_posts.shape[0] == 0:
-        hashtag_score = 0
-        hashtag_res = []
+        hashtag_sim = 0
+    same_hashtag = list(set(s_hashtag).intersection(set(t_hashtag)))
+    for hashtag in same_hashtag:
+        s_hashtag_begin_idx = s_post['text_trans'].find(hashtag)
+        t_hashtag_begin_idx = t_post['text_trans'].find(hashtag)
+        s_hashtag_end_idx = s_hashtag_begin_idx + len(hashtag)
+        t_hashtag_end_idx = t_hashtag_begin_idx + len(hashtag)
+        s_highlight.append({
+            "begin": int(s_hashtag_begin_idx),
+            "end": int(s_hashtag_end_idx)
+        })
+        t_highlight.append({
+            "begin": int(t_hashtag_begin_idx),
+            "end": int(t_hashtag_end_idx)
+        })
+    # print(f"hashtag_sim: {hashtag_sim}")
+    # ########### Inf post ###########
+    s_platform_posts = df_data[df_data['from'] == s_platform]
+    t_platform_posts = df_data[df_data['from'] == t_platform]
+    # 计算当前最高的inf_posts
+    max_engagement_s = s_platform_posts[["cnt_retweet", "cnt_agree", "cnt_comment"]].sum(axis=1).idxmax()
+    max_engagement_t = t_platform_posts[["cnt_retweet", "cnt_agree", "cnt_comment"]].sum(axis=1).idxmax()
+    # 计算s、t的inf_posts
+    engagement_t = t_post["cnt_retweet"] + t_post["cnt_agree"] + t_post["cnt_comment"]
+    engagement_s = s_post["cnt_retweet"] + s_post["cnt_agree"] + s_post["cnt_comment"]
+    # print(f"max_s: {max_engagement_s},max_t: {max_engagement_t},engagement_s: {engagement_s}, engagement_t: {engagement_t}")
+    penalty = 0.2
+    if t_platform == 'weibo':
+        penalty = 0.5
+    is_post = not s_post['action'] == 'post'
+    inf = np.log(1 + engagement_s) / np.log(1 + max_engagement_s) * (1 - penalty * is_post)
+    # print(f"inf: {inf}")
+    # 检查t平台的特征关键词
+    special_score,special_words = check_special_info(t_post['text_trans'])
+    for word in special_words:
+        s_special_begin_idx = s_post['text_trans'].find(word)
+        t_special_begin_idx = t_post['text_trans'].find(word)
+        s_special_end_idx = s_special_begin_idx + len(word)
+        t_special_end_idx = t_special_begin_idx + len(word)
+        s_highlight.append({
+            "begin": s_special_begin_idx,
+            "end": s_special_end_idx
+        })
+        t_highlight.append({
+            "begin": t_special_begin_idx,
+            "end": t_special_end_idx
+        })
+    # print(f"special_score: {special_score}")
+    ########### Sim User info ###########
+    s_user = get_user_info(df_all_accounts,s_post['user_id'])
+    t_user = get_user_info(df_all_accounts,t_post['user_id'])
+    # 不跨语言用jarosim
+    jaro_sim = Levenshtein.jaro(s_user['name'], t_user['name'])
+    # 跨语言用bert
+    bert_sim = calculate_bert_similarity(s_user['name'], t_user['name'], model_mut)
+    if detect(s_user['name']) != detect(t_user['name']):
+        username_sim = bert_sim
     else:
-        hashtag_score, hashtag_res = cal_hashtag_score(A_posts, B_posts)
-    # print(f"hashtag_score: {hashtag_score}")
-    ##############计算A B的SameURL #######################
-    A_posts_url = find_posts_with_url(A_posts)
-    B_posts_url = find_posts_with_url(B_posts)
-    A_posts_url_list,_ = find_same_url(A_posts_url)
-    B_posts_url_list,_ = find_same_url(B_posts_url)
-    same_url = list(set(A_posts_url_list).intersection(set(B_posts_url_list)))
+        username_sim = jaro_sim
+    # print(f"jaro_sim: {jaro_sim}")
+    ########### Sim User description ###########
+    s_description = s_user['description']
+    t_description = t_user['description']
+    if type(s_description) != str:
+        if pd.isna(s_description):
+            s_description = s_user['name']
+        else:
+            s_description = s_description.values[0]
+    if type(t_description) != str:
+        if pd.isna(t_description):
+            t_description = t_user['name']
+        else:
+            t_description = t_description.values[0]
+    sim_description = calculate_bert_similarity(s_description, t_description, model_mut)
+    # print(f"sim_description: {sim_description}")
+    sim_userinfo = 0.5 * username_sim + 0.5 * sim_description
+    if t_user['type'] ==None:
+        t_SNS = -1
+    else:
+        t_SNS = 1
+    word_list_1 = ['america', 'USA','U.S.', 'twitter', 'facebook']
+    word_list_2 = ['china','chinese', 'weibo']
+    flag = False
+    if t_post['from'] == 'weibo':
+        for word in word_list_1:
+            if word in t_post['text_trans']:
+                flag = True
+                break
+    else:
+        for word in word_list_2:
+            if word in t_post['text_trans']:
+                flag = True
+                break
+    if sim_userinfo > 0.5:
+        diffusion_pattern_type = 0
+    elif 0.3 < sim_userinfo <= 0.5 or t_SNS > 0 or flag:
+        diffusion_pattern_type = 1
+    else:
+        diffusion_pattern_type = 2
+    ########### Sim User name ###########
+    # 寻找单个账号粉丝量最大的
+    max_fans = 0
+    for idx, row in s_platform_posts.iterrows():
+        user = get_user_info(df_all_accounts,row['user_id'])
+        fan_count = int(user['fan'])
+        if fan_count > max_fans:
+            max_fans = int(user['fan'])
+    norm_fans = int(s_user['fan']) / max_fans
+    is_verified = 1 if s_user['validation'] == 'True' else 0
+    inf_user = 0.6 * norm_fans + 0.2 * is_verified
+    # print(f"inf_user: {inf_user}")
+    ########### Sim Interest ###########
+    s_all_posts = df_data[df_data['user_id'] == s_post['user_id']]
+    t_all_posts = df_data[df_data['user_id'] == t_post['user_id']]
+    # print(f"s_all_posts: {s_all_posts.shape[0]}, t_all_posts: {t_all_posts.shape[0]}")
+    s_all_docs = s_all_posts['text_trans'].tolist()
+    t_all_docs = t_all_posts['text_trans'].tolist()
+    s_tokenized = [doc.lower().split() for doc in s_all_docs]
+    t_tokenized = [doc.lower().split() for doc in t_all_docs]
+    s_tokenized = [[word for word in doc if word not in stop_words] for doc in s_tokenized]
+    t_tokenized = [[word for word in doc if word not in stop_words] for doc in t_tokenized]
+    if s_tokenized == [] or t_tokenized == []:
+        sim_interest = 0
+    else:
+        s_dictionary = corpora.Dictionary(s_tokenized)
+        t_dictionary = corpora.Dictionary(t_tokenized)
+        s_corpus = [s_dictionary.doc2bow(text) for text in s_tokenized]
+        t_corpus = [t_dictionary.doc2bow(text) for text in t_tokenized]
+        s_lda = gensim.models.LdaModel(s_corpus, num_topics=10, id2word=s_dictionary, passes=15, random_state=42)
+        t_lda = gensim.models.LdaModel(t_corpus, num_topics=10, id2word=t_dictionary, passes=15, random_state=42)
+        # pprint(s_lda.print_topics())
+        # pprint(t_lda.print_topics())
+        s_dist = s_lda.get_document_topics(s_corpus)
+        t_dist = t_lda.get_document_topics(t_corpus)
+        kl_divergence = 0
+        for s_doc, t_doc in zip(s_dist, t_dist):
+            for (topic, prob) in s_doc:
+                t_prob = 0
+                # print(f"topic: {topic}, prob: {prob}")
+                for (t_topic, t_prob) in t_doc:
+                    if t_topic == topic:
+                        t_prob = t_prob
+                        break
+                prob = round(prob, 2)
+                t_prob = round(t_prob, 2)
+                kl_divergence += prob * np.log(prob / t_prob)
+        # print(f"kl_divergence: {kl_divergence}")
+        sim_interest = 1 / (1 + kl_divergence)
+    # print(f"sim_interest: {sim_interest}")
+    ########### PastSpread  ###########
+    s_user_all_post_url = ccf.find_posts_with_url(s_all_posts, 'text')
+    t_user_all_post_url = ccf.find_posts_with_url(t_all_posts, 'text')
+    s_user_all_post_url_list, s_user_all_post_id_list = ccf.find_same_url(s_user_all_post_url, 'text')
+    t_user_all_post_url_list, t_user_all_post_id_list = ccf.find_same_url(t_user_all_post_url, 'text')
+    same_url = list(set(s_user_all_post_url_list).intersection(set(t_user_all_post_url_list)))
     same_url_count = len(same_url)
-    # print(f"same_url_count: {same_url_count}")
-    ##############计算A B的 DirectURL #######################
-    A_direct_url = A_posts['url'].dropna().tolist()
-    B_direct_url = B_posts['url'].dropna().tolist()
-    direct_url = list(set(A_direct_url).intersection(set(B_direct_url)))
-    direct_url_count = len(direct_url)
-    # print(f"direct_url_count: {direct_url_count}")
-    ##############计算A B的 Refer #######################
-    direct_refer_score = direct_refer(B_posts, A)
-    ##############计算A B的 KOL Inf #######################
-    # 注意只计算A的KOL
-    Inf_posts = find_posts_with_engagement(A_posts, 100)
-    Inf_posts_num = Inf_posts.shape[0]
-    # 找出A_posts中的账号
-    A_user = A_posts['user_id'].drop_duplicates().tolist()
-    # 在self.all_users中找出这些账号
-    A_user_info = all_users[all_users['user_id'].isin(A_user)]
-    A_user_info['fan'] = A_user_info['fan'].astype(int)
-    # 找出粉丝数量大于500的账号
-    InfAccts = A_user_info[A_user_info['fan'] > 500].shape[0]
-    max_Inf_post = find_posts_with_engagement(all_A_posts, 100)
-    max_Inf_post_num = max_Inf_post.shape[0]
-    all_A_user = all_A_posts['user_id'].drop_duplicates().tolist()
-    all_A_user_info = all_users[all_users['user_id'].isin(all_A_user)]
-    all_A_user_info['fan'] = all_A_user_info['fan'].astype(int)
-    max_InfAccts = all_A_user_info[all_A_user_info['fan'] > 500].shape[0]
-    inf_post = 0 if (max_Inf_post_num == 0) else (Inf_posts_num / max_Inf_post_num)
-    inf_acct = 0 if (max_InfAccts == 0) else (InfAccts / max_InfAccts)
-    KOL_inf = inf_post + inf_acct
-    # print(f"A engagement: {Inf_posts_num}, fan > 500: {InfAccts}, max_Inf_post: {max_Inf_post_num}, max_fan > 500: {max_InfAccts}")
-    # print(f"KOL_inf: {KOL_inf}")
-    #######################################################
-    sim_con = 0.1 * rw_score + 0.3 * same_url_count + 0.5 * direct_url_count + 0.4 * direct_refer_score + 0.1 * hashtag_score
-    # 计算指数
-    p = 1 - np.exp(-1 * sal_factor - KOL_inf * sim_con)
-    # print(f"p: {p}")
-    def print_data(debug = False):
-        if debug:
-            print("====================================================================================")
-            print(f"A: {A_posts.shape[0]} ,B: {B_posts.shape[0]}")
-            print(f"all_A: {all_A_posts.shape[0]} ,all_B: {all_B_posts.shape[0]}")
-            print(f"sal_factor: {sal_factor}")
-            print(f"rw_score: {rw_score}")
-            print(f"hashtag_score: {hashtag_score}")
-            print(f"same_url_count: {same_url_count}")
-            print(f"direct_url_count: {direct_url_count}")
-            print(f"direct_refer_score: {direct_refer_score}")
-            print(f"A engagement: {Inf_posts_num}, fan > 500: {InfAccts}, max_Inf_post: {max_Inf_post_num}, max_fan > 500: {max_InfAccts}")
-            print(f"inf_post:{inf_post},inf_acct:{inf_acct}")
-            print(f"KOL_inf: {KOL_inf}")
-            print(f"p: {p}")
-            print("====================================================================================")
-    print_data(debug)
-    return p, rw_res, hashtag_res
+    ########### Sim Past hashtag ###########
+    s_user_all_post_hashtag = ccf.find_hashtags(s_all_posts)
+    t_user_all_post_hashtag = ccf.find_hashtags(t_all_posts)
+    s_user_all_post_hashtag = [item for sublist in s_user_all_post_hashtag for item in sublist]
+    t_user_all_post_hashtag = [item for sublist in t_user_all_post_hashtag for item in sublist]
+    s_user_all_post_hashtag = list(set(s_user_all_post_hashtag))
+    t_user_all_post_hashtag = list(set(t_user_all_post_hashtag))
+    same_hashtag = list(set(s_user_all_post_hashtag).intersection(set(t_user_all_post_hashtag)))
+    same_hashtag_count = len(same_hashtag)
+    ######### DirectURL #########
+    s_all_url = s_all_posts['url'].dropna().tolist()
+    t_all_url = t_all_posts['url'].dropna().tolist()
+    s_all_url = list(set(s_all_url))
+    t_all_url = list(set(t_all_url))
+    same_url = list(set(s_all_url).intersection(set(t_all_url)))
+    direct_url_count = len(same_url)
+    past_spread = 0.5 * direct_url_count + 0.25 * same_url_count + 0.25 * same_hashtag_count
+    # print(f"direc_url_count: {direct_url_count}, same_url_count: {same_url_count}, same_hashtag_count: {same_hashtag_count}")
+    # print(f"past_spread: {past_spread}")
+    ########### NumPath ###########
+    # 求出t针对s的topic
+    s_topic = s_post['cluster']
+    t_topic_post = t_all_posts[t_all_posts['cluster'] == s_topic]
+    t_topic = t_post['cluster']
+    s_topic_post = s_all_posts[s_all_posts['cluster'] == t_topic]
+    num_path = t_topic_post.shape[0] + s_topic_post.shape[0]
+    # print(f"num_path: {num_path}")
+    post_rel = 0.5 * max(2 * direct_url_count, special_score) + inf * max(word_sim, hashtag_sim, url_sim)
+    usr_rel = inf_user * 0.5 * (username_sim + sim_description)
+    his_rel = 2 * (0.4 * sim_interest + 0.6 * past_spread) / (1 + np.exp(-num_path))
+    # print(f"post_rel: {post_rel}, usr_rel: {usr_rel}, his_rel: {his_rel}")
+    factor = 1 - np.exp(-(post_rel + usr_rel + his_rel) / (1 + 0.2 * time_diff))
+    factor = max(direct_url_count, factor)
+    # print(f"factor: {factor}")
+    # 把上面所有上面的print
+    if debug:
+        print(f"time_diff: {time_diff}")
+        print(f"sim: {word_sim}")
+        print(f"url_sim: {url_sim}")
+        print(f"hashtag_sim: {hashtag_sim}")
+        print(f"inf: {inf}")
+        print(f"special_score: {special_score}")
+        print(f"jaro_sim: {username_sim}")
+        print(f"sim_description: {sim_description}")
+        print(f"inf_user: {inf_user}")
+        print(f"sim_interest: {sim_interest}")
+        print(f"past_spread: {past_spread}")
+        print(f"num_path: {num_path}")
+        print(f"post_rel: {post_rel}, usr_rel: {usr_rel}, his_rel: {his_rel}")
+        print(f"factor: {factor}")
+    return factor,s_post,t_post,s_highlight,t_highlight,diffusion_pattern_type
 
 
 if __name__ == '__main__':
@@ -296,39 +333,31 @@ if __name__ == '__main__':
     ('240_china_nuclear_pollution','2023-08-21','2023-08-30'),
     ('70_billion_japan_water', '2023-08-21','2023-08-30'),
     ('cooling_water_nuclear_wastewater', '2023-08-21','2023-08-30'),
-    ('korean_...', '2023-08-21','2023-08-30'),
+    ('korean_...', '2023-08-21','2023-09-02'),
     ('sue_TEPCO_japan', '2023-08-21','2023-08-30'),
     ('radioactive_pollution_japan_sea', '2023-08-21','2023-08-30'),
     ('treatment_japan_waste_nuclear', '2023-08-21','2023-08-30')
     ]
     cluster_names = [item[0] for item in hash_table]
     # 提取中间一列作为 Python 列表
-    debug = False
+    debug = True
     for idx in range(len(hash_table)):
         start_time = hash_table[idx][1]
         end_time = hash_table[idx][2]
         cluster = cluster_names[idx]
         A = 'weibo'
         B = 'twitter'
-        print(f"============== cluster: {cluster} ====================")
-        cycle = 10
-        df_data = df_all_posts[df_all_posts['cluster'] == cluster]
-        p1,_,_ = cal_cluster_factor(A,B,df_data,end_time,cycle,df_all_posts,df_all_accounts,debug)
-        p2,_,_ = cal_cluster_factor(B,A,df_data,end_time,cycle,df_all_posts,df_all_accounts,debug)
-        if p1 > p2:
-            print(f"$$$$$$ {A}------>{B} $$$$$$ p = {p1}  $$$$$$")
-        else:
-            print(f"$$$$$$ {B}------>{A} $$$$$$ p = {p2}  $$$$$$")
+        df_data = df_all_posts[(df_all_posts['publish_time'] >= start_time) & (df_all_posts['publish_time'] <= end_time)]
+        df_data = df_data[df_data['query'] == 'highlight']
+        df_data = df_data[df_data['cluster'] == cluster]
+        print(f"Cluster: {cluster}  df_data shape: {df_data.shape[0]}")
+        df_data_A = df_data[df_data['from'] == A]
+        df_data_B = df_data[df_data['from'] == B]
+        for idx_a in range(df_data_A.shape[0]):
+            for idx_b in range(df_data_B.shape[0]):
+                print(f"=============================================")
+                factor,s_post,t_post,s_highlight,t_highlight,diffusion_pattern_type = cal_post_factor(df_data_A.iloc[idx_a],df_data_B.iloc[idx_b],df_data,debug,debug)
 
-    # idx = 3
-    #
-    # start_time = hash_table[idx][1]
-    # end_time = hash_table[idx][2]
-    # cluster = cluster_names[idx]
-    # A = 'weibo'
-    # B = 'twitter'
-    # print(f"cluster: {cluster}, A: {A}, B: {B}")
-    # cycle = 10
-    # df_data = df_all_posts[df_all_posts['cluster'] == cluster]
-    # cal_cluster_factor(A,B,df_data,end_time,cycle,df_all_posts,df_all_accounts,debug = True)
-    # cal_cluster_factor(B,A,df_data,end_time,cycle,df_all_posts,df_all_accounts,debug = True)
+
+
+

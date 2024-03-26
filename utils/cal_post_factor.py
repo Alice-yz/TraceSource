@@ -76,7 +76,7 @@ def cal_post_factor(post_A,post_B,df_data,self,debug=False):
     t_url = set(find_url_from_text(t_post['text_trans']))
     url_intersection = s_url.intersection(t_url)
     url_union = s_url.union(t_url)
-    url_sim = len(url_intersection) / len(url_union)
+    url_sim = len(url_intersection) / len(url_union) if len(url_union) != 0 else 0
     # 查找same_url在s_post和t_post中的位置
     same_url = list(url_intersection)
     s_highlight = []
@@ -166,9 +166,15 @@ def cal_post_factor(post_A,post_B,df_data,self,debug=False):
     s_description = s_user['description']
     t_description = t_user['description']
     if type(s_description) != str:
-        s_description = s_description.values[0]
+        if pd.isna(s_description):
+            s_description = s_user['name']
+        else:
+            s_description = s_description.values[0]
     if type(t_description) != str:
-        t_description = t_description.values[0]
+        if pd.isna(t_description):
+            t_description = t_user['name']
+        else:
+            t_description = t_description.values[0]
     sim_description = calculate_bert_similarity(s_description, t_description, model_mut)
     # print(f"sim_description: {sim_description}")
     sim_userinfo = 0.5 * username_sim + 0.5 * sim_description
@@ -196,7 +202,13 @@ def cal_post_factor(post_A,post_B,df_data,self,debug=False):
     else:
         diffusion_pattern_type = 2
     ########### Sim User name ###########
-    norm_fans = int(s_user['fan']) / 100000000
+    # 寻找单个账号粉丝量最大的
+    max_fans = 0
+    for idx, row in s_platform_posts.iterrows():
+        user = self.get_user_info(row['user_id'])
+        if int(user['fan']) > max_fans:
+            max_fans = int(user['fan'])
+    norm_fans = int(s_user['fan']) / max_fans
     is_verified = 1 if s_user['validation'] == 'True' else 0
     inf_user = 0.6 * norm_fans + 0.2 * is_verified
     # print(f"inf_user: {inf_user}")
