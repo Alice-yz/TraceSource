@@ -41,6 +41,10 @@ def cal_hashtag_score(A_posts, B_posts):
     B_hashtags = find_hashtags(B_posts).tolist()
     A_hashtags_list = [item for sublist in A_hashtags for item in sublist]
     B_hashtags_list = [item for sublist in B_hashtags for item in sublist]
+    if len(A_hashtags_list) == 0 or len(B_hashtags_list) == 0:
+        hashtag_score = 0
+        hashtag_res = []
+        return hashtag_score, hashtag_res
     # print(f"A_hashtags: {A_hashtags_list}")
     # print(f"B_hashtags: {B_hashtags_list}")
     embed_A = model.encode(A_hashtags_list, convert_to_tensor=True)
@@ -86,7 +90,22 @@ def find_same_url(df, col='text'):
 def find_posts_mention_other_platform(df, platform, col='text'):
     return df[df[col].str.contains(platform, na=False)]
 
-
+def direct_refer(df, platform,col='text_trans'):
+    if platform == 'weibo':
+        refer_list = ['weibo', 'Weibo','Chinese Twitter']
+    elif platform == 'twitter':
+        refer_list = ['twitter', 'Twitter','blue bird']
+    else:
+        refer_list = ['facebook', 'Facebook']
+    df_refer = df[df[col].str.contains('|'.join(refer_list), na=False)]
+    refer_num = df_refer.shape[0]
+    spread_list = ["source", "cr.", "original post", "source:", "via", "via:", "original link", "credit:", "from",
+                    "from:","original link","courtesy of","reprinted from","quote form","cited from","hat tip","originally published by"]
+    df_spread = df[df[col].str.contains('|'.join(spread_list), na=False)]
+    spread_num = df_spread.shape[0]
+    # 加权求和
+    refer_score = (0.5 * refer_num + 0.5 * spread_num) / 5
+    return refer_score
 def find_posts_with_engagement(df, threshold, col=["cnt_retweet", "cnt_agree", "cnt_comment"]):
     return df[df[col] > threshold]
 
@@ -114,10 +133,18 @@ def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users,debug = 
         sal_factor = (A_posts.shape[0] * B_posts.shape[0]) / (all_A_posts.shape[0] * all_B_posts.shape[0])
     # print(f"sal_factor: {sal_factor}")
     ##############计算A B的文本RW_SCORE #######################
-    rw_score, rw_res = cal_RW_SCORE(A_posts, B_posts)
+    if A_posts.shape[0] == 0 or B_posts.shape[0] == 0:
+        rw_score = 0
+        rw_res = []
+    else:
+        rw_score, rw_res = cal_RW_SCORE(A_posts, B_posts)
     # print(f"rw_score: {rw_score}")
     ##############计算A B的文本Hashtag_score#######################
-    hashtag_score, hashtag_res = cal_hashtag_score(A_posts, B_posts)
+    if A_posts.shape[0] == 0 or B_posts.shape[0] == 0:
+        hashtag_score = 0
+        hashtag_res = []
+    else:
+        hashtag_score, hashtag_res = cal_hashtag_score(A_posts, B_posts)
     # print(f"hashtag_score: {hashtag_score}")
     ##############计算A B的SameURL #######################
     A_posts_url = find_posts_with_url(A_posts)
@@ -134,9 +161,7 @@ def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users,debug = 
     direct_url_count = len(direct_url)
     # print(f"direct_url_count: {direct_url_count}")
     ##############计算A B的 Refer #######################
-    B_mention_A = find_posts_mention_other_platform(B_posts, A, 'text_trans')
-    B_mention_A_num = B_mention_A.shape[0]
-    # print(f"B mention A: {B_mention_A_num}")
+    direct_refer_score = direct_refer(B_posts, A)
     ##############计算A B的 KOL Inf #######################
     # 注意只计算A的KOL
     Inf_posts = find_posts_with_engagement(A_posts, 100)
@@ -155,10 +180,12 @@ def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users,debug = 
     all_A_user_info['fan'] = all_A_user_info['fan'].astype(int)
     max_InfAccts = all_A_user_info[all_A_user_info['fan'] > 500].shape[0]
     # print(f"A engagement: {Inf_posts_num}, fan > 500: {InfAccts}, max_Inf_post: {max_Inf_post_num}, max_fan > 500: {max_InfAccts}")
-    KOL_inf = Inf_posts_num / max_Inf_post_num + InfAccts / max_InfAccts
+    inf_post = 0 if (max_Inf_post_num == 0) else (Inf_posts_num / max_Inf_post_num)
+    inf_acct = 0 if (max_InfAccts == 0) else (InfAccts / max_InfAccts)
+    KOL_inf = inf_post + inf_acct
     # print(f"KOL_inf: {KOL_inf}")
     #######################################################
-    sim_con = 0.1 * rw_score + 0.3 * same_url_count + 0.5 * direct_url_count + 0.4 * B_mention_A_num + 0.1 * hashtag_score
+    sim_con = 0.1 * rw_score + 0.3 * same_url_count + 0.5 * direct_url_count + 0.4 * direct_refer_score + 0.1 * hashtag_score
     # 计算指数
     p = 1 - np.exp(-1 * sal_factor - KOL_inf * sim_con)
     # print(f"p: {p}")
@@ -171,7 +198,7 @@ def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users,debug = 
             print(f"hashtag_score: {hashtag_score}")
             print(f"same_url_count: {same_url_count}")
             print(f"direct_url_count: {direct_url_count}")
-            print(f"B mention A: {B_mention_A_num}")
+            print(f"direct_refer_score: {direct_refer_score}")
             print(f"A engagement: {Inf_posts_num}, fan > 500: {InfAccts}, max_Inf_post: {max_Inf_post_num}, max_fan > 500: {max_InfAccts}")
             print(f"KOL_inf: {KOL_inf}")
             print(f"p: {p}")

@@ -8,6 +8,8 @@ def remove_stopwords(text, stopwords):
     clean_text = ' '.join(clean_words)  # 将列表中的单词重新组合成文本
     return clean_text
 def remove_newlines(text):
+    if type(text) == float:
+        return ''
     # 将换行符替换为空格
     clean_text = text.replace('\n', ' ')
     return clean_text
