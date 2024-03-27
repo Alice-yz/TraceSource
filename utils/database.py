@@ -65,8 +65,8 @@ def tgt_post(post):
     new_post['id'] = post['post_id']
     new_post['user_id'] = post['user_id']
     new_post['avatar'] = post['avatar']
-    new_post['screen_name'] = post['screen_name']
-    new_post['name'] = post['name']
+    new_post['screen_name'] = post['screen_name_trans']
+    new_post['name'] = post['screen_name_trans']
     new_post['content'] = post['text_trans']
     new_post['time'] = post['publish_time']
     new_post['media'] = post['img']
@@ -85,12 +85,15 @@ def tgt_user(user):
     new_user = {}
     new_user['user_id'] = user['user_id']
     new_user['avatar'] = user['avatar']
-    new_user['screen_name'] = user['screen_name']
-    new_user['name'] = user['name']
-    new_user['description'] = user['description']
+    new_user['screen_name'] = user['screen_name_trans']
+    new_user['name'] = user['screen_name_trans']
+    new_user['description'] = user['description_trans']
     new_user['fan'] = user['fan']
     new_user['type'] = user['type']
-    new_user['validation'] = user['validation']
+    if user['verified_reason_trans'] == None:
+        new_user['validation'] = None
+    else:
+        new_user['validation'] = user['verified_reason_trans']
     return new_user
 
 
@@ -371,7 +374,7 @@ class DataBase:
             hot_user = self.get_user_info(hot_post['user_id'])
             output.append({
                 'avatar': hot_user['avatar'],
-                'name': hot_user['name'],
+                'name': hot_user['screen_name_trans'],
                 'content': hot_post['text_trans'],
                 'time': hot_post['publish_time'],
                 'media': hot_post['img'],
@@ -497,7 +500,7 @@ class DataBase:
                         output['callPlatformname'].append({
                             'start': {
                                 'avatar': B_post['avatar'],
-                                'name': B_post['name'],
+                                'name': B_post['screen_name_trans'],
                                 'content': B_text,
                                 'time': B_post['publish_time'],
                                 'media': B_post['img'],
@@ -515,7 +518,7 @@ class DataBase:
                             'end': {
                                 'platform': platform_A,
                                 'avatar': A_post['avatar'],
-                                'name': A_post['name'],
+                                'name': A_post['screen_name_trans'],
                                 'content': A_text,
                                 'time': A_post['publish_time'],
                                 'media': A_post['img'],
@@ -652,9 +655,9 @@ class DataBase:
                 'platform': row['from'],
                 'time': row['publish_time'],
                 'avatar': s_user['avatar'],
-                'name': s_user['name'],
+                'name': s_user['screen_name_trans'],
                 'content': row['text_trans'],
-                'screen_name': s_user['screen_name'],
+                'screen_name': s_user['screen_name_trans'],
                 'fan': s_user['fan'],
                 'like': row['cnt_agree'],
                 'repost': row['cnt_retweet'],
@@ -670,9 +673,9 @@ class DataBase:
                 'platform': row['from'],
                 'time': row['publish_time'],
                 'avatar': t_user['avatar'],
-                'name': t_user['name'],
+                'name': t_user['screen_name_trans'],
                 'content': row['text_trans'],
-                'screen_name': t_user['screen_name'],
+                'screen_name': t_user['screen_name_trans'],
                 'fan': t_user['fan'],
                 'like': row['cnt_agree'],
                 'repost': row['cnt_retweet'],
