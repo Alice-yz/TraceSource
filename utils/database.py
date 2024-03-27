@@ -173,6 +173,16 @@ class DataBase:
             # 转换为2020-01-01格式
             item['x'] = date.strftime('%Y-%m-%d')
             item['y'] = item.pop('counts')
+        # 生成构造时间线要求从2021-05-05开始，到2022-01-15，每天随机生成一个(1,10)直接的数量
+        start_fake_date = pd.to_datetime('2021-05-05')
+        end_fake_date = pd.to_datetime('2022-01-15')
+        while start_fake_date <= end_fake_date:
+            if start_fake_date.strftime('%Y-%m-%d') not in [item['x'] for item in data_list]:
+                fake_data = {}
+                fake_data['x'] = start_fake_date.strftime('%Y-%m-%d')
+                fake_data['y'] = np.random.randint(1, 10)
+                data_list.append(fake_data)
+            start_fake_date += pd.Timedelta(days=1)
         return data_list
 
     def get_topic(self, platform_list, event, date, cycle):
@@ -244,6 +254,14 @@ class DataBase:
         # 根据event获取cluster
         # 获取平台-聚类
         # 遍历平台
+        max_post_count = 0
+        for platform in platform_list:
+            platform_posts = df_data[df_data['from'] == platform]
+            cluster_name_list = platform_posts['cluster'].unique().tolist()
+            for cluster_name in cluster_name_list:
+                num = platform_posts[platform_posts['cluster'] == cluster_name].shape[0]
+                if num > max_post_count:
+                    max_post_count = num
         for platform in platform_list:
             platform_posts = df_data[df_data['from'] == platform]
             cluster_name_list = platform_posts['cluster'].unique().tolist()
@@ -283,11 +301,6 @@ class DataBase:
             plt_inf_posts = plt_inf_posts.sort_values(by='counts', ascending=False).reset_index(drop=True)
             # print(plt_inf_posts)
             # 遍历cluster
-            max_post_count = 0
-            for cluster_name in cluster_name_list:
-                num = platform_posts[platform_posts['cluster'] == cluster_name].shape[0]
-                if num > max_post_count:
-                    max_post_count = num
             for cluster_name in cluster_name_list:
                 c_p_data = {}
                 c_p_data['name'] = cluster_name
