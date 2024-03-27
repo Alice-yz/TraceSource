@@ -99,6 +99,7 @@ class DataBase:
         self.all_posts = read_csv_post(posts_path)
         self.all_users = read_csv_user(users_path)
         self.event = ["US2024Election", "Water"]
+        # 脱裤子放屁
         self.cluster_dict = {
             1:('Great_Wave_Kanagawa', "2021-04-20", "2021-04-29"),
             2:('foreign_affairs_questions', '2021-04-20', '2021-04-29'),
