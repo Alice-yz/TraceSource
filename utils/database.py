@@ -186,8 +186,8 @@ class DataBase:
         """
         df_data = self.all_posts
         df_data = self.get_cluster_from_event(df_data,event)
-        end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
+        end_time = (pd.to_datetime(date)+pd.Timedelta(days=1)).strftime('%Y-%m-%d')
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         # 转换为2020-01-01格式
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
@@ -232,8 +232,8 @@ class DataBase:
         return_data = []
         df_data = self.all_posts
         df_data = self.get_cluster_from_event(df_data,event)
-        end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
+        end_time = (pd.to_datetime(date)+pd.Timedelta(days=1)).strftime('%Y-%m-%d')
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         # 获取当前时间窗口帖子的数量
@@ -352,8 +352,8 @@ class DataBase:
         :return:
         """
         df_data = self.all_posts
-        end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
+        end_time = (pd.to_datetime(date)+pd.Timedelta(days=1)).strftime('%Y-%m-%d')
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         df_data = df_data[df_data['cluster'] == cluster]
@@ -378,8 +378,8 @@ class DataBase:
         :return:
         """
         df_data = self.all_posts
-        end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
+        end_time = (pd.to_datetime(date)+pd.Timedelta(days=1)).strftime('%Y-%m-%d')
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         # 转换cluster为idx
@@ -418,8 +418,8 @@ class DataBase:
     def get_flower_post_link(self, event, cluster, date, cycle, start, end):
         output = {}
         df_data = self.all_posts
-        end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
+        end_time = (pd.to_datetime(date)+pd.Timedelta(days=1)).strftime('%Y-%m-%d')
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         # 转换cluster为idx
@@ -524,50 +524,50 @@ class DataBase:
                     })
                     # 寻找callPlatformname
                     # 在B中查找A的名字，且A要比B早
-                    platform_A = A_post['from']
-                    _,special_words = cpf.check_special_info(B_post['text_trans'])
-                    for word in special_words:
-                        special_begin_index = B_text.find(word)
-                        special_end_index = special_begin_index + len(word)
-                        output['callPlatformname'].append({
-                            'start': {
-                                'avatar': B_post['avatar'],
-                                'name': B_user['screen_name_trans'],
-                                'content': B_text,
-                                'time': B_post['publish_time'],
-                                'media': B_post['img'],
-                                'repost': int(B_post['cnt_retweet']),
-                                'like': int(B_post['cnt_agree']),
-                                'comment': int(B_post['cnt_comment']),
-                                'fan': self.get_user_info(B_post['user_id'])['fan'],
-                                'highlight': [
-                                    {
-                                        'begin': int(special_begin_index),
-                                        'end': int(special_end_index)
-                                    }
-                                ]
-                            },
-                            'end': {
-                                'platform': platform_A,
-                                'avatar': B_post['avatar'],
-                                'name': B_user['screen_name_trans'],
-                                'content': A_text,
-                                'time': A_post['publish_time'],
-                                'media': A_post['img'],
-                                'repost': int(A_post['cnt_retweet']),
-                                'like': int(A_post['cnt_agree']),
-                                'comment': int(A_post['cnt_comment']),
-                                'fan': self.get_user_info(A_post['user_id'])['fan']
-                            }
-                        })
+                platform_A = A_posts['from']
+                _,special_words = cpf.check_special_info(B_post['text_trans'])
+                for word in special_words:
+                    special_begin_index = B_text.find(word)
+                    special_end_index = special_begin_index + len(word)
+                    output['callPlatformname'].append({
+                        'start': {
+                            'avatar': B_post['avatar'],
+                            'name': B_user['screen_name_trans'],
+                            'content': B_text,
+                            'time': B_post['publish_time'],
+                            'media': B_post['img'],
+                            'repost': int(B_post['cnt_retweet']),
+                            'like': int(B_post['cnt_agree']),
+                            'comment': int(B_post['cnt_comment']),
+                            'fan': self.get_user_info(B_post['user_id'])['fan'],
+                            'highlight': [
+                                {
+                                    'begin': int(special_begin_index),
+                                    'end': int(special_end_index)
+                                }
+                            ]
+                        },
+                        'end': {
+                            'platform': platform_A,
+                            'avatar': B_post['avatar'],
+                            'name': B_user['screen_name_trans'],
+                            'content': A_text,
+                            'time': A_post['publish_time'],
+                            'media': A_post['img'],
+                            'repost': int(A_post['cnt_retweet']),
+                            'like': int(A_post['cnt_agree']),
+                            'comment': int(A_post['cnt_comment']),
+                            'fan': self.get_user_info(A_post['user_id'])['fan']
+                        }
+                    })
                     # print(f"B mention A: {B_mention_A.shape[0]}")
         return output
 
     def get_flower_layout(self, platform_lists, event, date, cycle):
         output = {}
         df_data = self.all_posts
-        end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
+        end_time = (pd.to_datetime(date)+pd.Timedelta(days=1)).strftime('%Y-%m-%d')
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         # 按照聚类‘cluster’进行分组
@@ -610,8 +610,8 @@ class DataBase:
     def get_main_view(self, event, cluster, date, cycle, flower_posts):
         output = []
         df_data = self.all_posts
-        end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
+        end_time = (pd.to_datetime(date)+pd.Timedelta(days=1)).strftime('%Y-%m-%d')
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         df_data = df_data[df_data['cluster'] == cluster]
@@ -659,8 +659,8 @@ class DataBase:
 
     def get_history_relevance(self, platform_list, event, date, cycle, soure, target):
         df_data = self.all_posts
-        end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
+        end_time = (pd.to_datetime(date)+pd.Timedelta(days=1)).strftime('%Y-%m-%d')
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
         # df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         s_post_id = soure
@@ -725,8 +725,8 @@ class DataBase:
         s_user = self.get_user_info(s_id)
         t_user = self.get_user_info(t_id)
         df_data = self.all_posts
-        end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
+        end_time = (pd.to_datetime(date)+pd.Timedelta(days=1)).strftime('%Y-%m-%d')
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] <= end_time)]
         s_df_data = df_data[df_data['from'] == platform_list[0]]
