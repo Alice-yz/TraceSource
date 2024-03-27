@@ -55,7 +55,7 @@ def KOL_inf(df):
     return inf_df, noinf_df
 
 
-def tgt_post(post):
+def tgt_post(user,post):
     """
     转换post
     :param post:
@@ -65,8 +65,11 @@ def tgt_post(post):
     new_post['id'] = post['post_id']
     new_post['user_id'] = post['user_id']
     new_post['avatar'] = post['avatar']
-    new_post['screen_name'] = post['screen_name_trans']
-    new_post['name'] = post['screen_name_trans']
+    if post[post['from'] == 'weibo']:
+        new_post['screen_name'] = None
+    else:
+        new_post['screen_name'] = post['screen_name']
+    new_post['name'] = user['screen_name_trans']
     new_post['content'] = post['text_trans']
     new_post['time'] = post['publish_time']
     new_post['media'] = post['img']
@@ -76,7 +79,7 @@ def tgt_post(post):
     return new_post
 
 
-def tgt_user(user):
+def tgt_user(user,post):
     """
     转换user
     :param user:
@@ -85,7 +88,10 @@ def tgt_user(user):
     new_user = {}
     new_user['user_id'] = user['user_id']
     new_user['avatar'] = user['avatar']
-    new_user['screen_name'] = user['screen_name_trans']
+    if post[post['from'] == 'weibo']:
+        new_user['screen_name'] = None
+    else:
+        new_user['screen_name'] = post['screen_name']
     new_user['name'] = user['screen_name_trans']
     new_user['description'] = user['description_trans']
     new_user['fan'] = user['fan']
@@ -201,11 +207,12 @@ class DataBase:
                 new_post_list = []
                 new_user_list = []
                 for post in post_lists:
-                    new_post = tgt_post(post)
+                    user_info = self.get_user_info(post['user_id'])
+                    new_post = tgt_post(user_info,post)
                     new_post_list.append(new_post)
                     new_user = {}
-                    user_info = self.get_user_info(post['user_id'])
-                    new_user = tgt_user(user_info)
+
+                    new_user = tgt_user(user_info,new_post)
                     new_user_list.append(new_user)
                 cluster['post'][platform] = new_post_list
                 cluster['user'][platform] = new_user_list
@@ -454,10 +461,12 @@ class DataBase:
                     else:
                         B_begin_index = B_index
                         B_end_index = B_begin_index + len(same_url[i])
+                    A_user = self.get_user_info(A_post['user_id'])
+                    B_user = self.get_user_info(B_post['user_id'])
                     output['sameURL'].append({
                         'start': {
-                            'avatar': A_post['avatar'],
-                            'name': A_post['name'],
+                            'avatar': A_user['avatar'],
+                            'name': A_user['screen_name_trans'],
                             'content': A_text,
                             'time': A_post['publish_time'],
                             'media': A_post['img'],
@@ -473,8 +482,8 @@ class DataBase:
                             ]
                         },
                         'end': {
-                            'avatar': B_post['avatar'],
-                            'name': B_post['name'],
+                            'avatar': B_user['avatar'],
+                            'name': B_user['screen_name_trans'],
                             'content': B_text,
                             'time': B_post['publish_time'],
                             'media': B_post['img'],
@@ -500,7 +509,7 @@ class DataBase:
                         output['callPlatformname'].append({
                             'start': {
                                 'avatar': B_post['avatar'],
-                                'name': B_post['screen_name_trans'],
+                                'name': B_user['screen_name_trans'],
                                 'content': B_text,
                                 'time': B_post['publish_time'],
                                 'media': B_post['img'],
@@ -517,8 +526,8 @@ class DataBase:
                             },
                             'end': {
                                 'platform': platform_A,
-                                'avatar': A_post['avatar'],
-                                'name': A_post['screen_name_trans'],
+                                'avatar': B_post['avatar'],
+                                'name': B_user['screen_name_trans'],
                                 'content': A_text,
                                 'time': A_post['publish_time'],
                                 'media': A_post['img'],
@@ -657,8 +666,8 @@ class DataBase:
                 'avatar': s_user['avatar'],
                 'name': s_user['screen_name_trans'],
                 'content': row['text_trans'],
-                'screen_name': s_user['screen_name_trans'],
-                'fan': s_user['fan'],
+                'screen_name': s_user['screen_name'],
+                'fan': int(s_user['fan']),
                 'like': row['cnt_agree'],
                 'repost': row['cnt_retweet'],
                 'comment': row['cnt_comment'],
@@ -675,8 +684,8 @@ class DataBase:
                 'avatar': t_user['avatar'],
                 'name': t_user['screen_name_trans'],
                 'content': row['text_trans'],
-                'screen_name': t_user['screen_name_trans'],
-                'fan': t_user['fan'],
+                'screen_name': t_user['screen_name'],
+                'fan': int(t_user['fan']),
                 'like': row['cnt_agree'],
                 'repost': row['cnt_retweet'],
                 'comment': row['cnt_comment'],
