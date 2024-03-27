@@ -32,7 +32,7 @@ def calculate_cosine_similarity(text1, text2):
 def find_url_from_text(text):
     return re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text)
 
-def check_special_info(text):
+def check_special_info(text,platform):
     # 返回分数以及包含的特定的词
     special_info = ["source", "cr.", "original post", "source:", "via", "via:", "original link", "credit:", "from",
                     "from:","original link","courtesy of","reprinted from","quote form","cited from","hat tip","originally published by"]
@@ -48,6 +48,20 @@ def check_special_info(text):
             score = 1
             special_words.append(mention)
     return score,special_words
+
+def check_source_platform(B_text: object, A_platform: object) -> object:
+    special_words = []
+    if A_platform == 'weibo':
+        special_list = ['weibo','Weibo','Chinese Twitter','chinese twitter']
+    elif A_platform == 'twitter':
+        special_list = ['twitter','Twitter','bluebird','Bluebird']
+    else:
+        special_list = ['facebook','Facebook']
+    for special in special_list:
+        if special in B_text:
+            special_words.append(special)
+    return special_words
+
 
 def find_hashtags(text):
     return re.findall(r'#\w+#|\B#\w+\b', text)

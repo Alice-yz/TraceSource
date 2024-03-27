@@ -496,7 +496,7 @@ class DataBase:
                             'repost': int(A_post['cnt_retweet']),
                             'like': int(A_post['cnt_agree']),
                             'comment': int(A_post['cnt_comment']),
-                            'fan': self.get_user_info(A_post['user_id'])['fan'],
+                            'fan': int(A_user['fan']),
                             'highlight': [
                                 {
                                     'begin': int(A_begin_index),
@@ -513,7 +513,7 @@ class DataBase:
                             'repost': int(B_post['cnt_retweet']),
                             'like': int(B_post['cnt_agree']),
                             'comment': int(B_post['cnt_comment']),
-                            'fan': self.get_user_info(B_post['user_id'])['fan'],
+                            'fan': int(B_user['fan']),
                             'highlight': [
                                 {
                                     'begin': int(B_begin_index),
@@ -524,43 +524,35 @@ class DataBase:
                     })
                     # 寻找callPlatformname
                     # 在B中查找A的名字，且A要比B早
-                platform_A = A_posts['from']
-                _,special_words = cpf.check_special_info(B_post['text_trans'])
-                for word in special_words:
-                    special_begin_index = B_text.find(word)
-                    special_end_index = special_begin_index + len(word)
-                    output['callPlatformname'].append({
-                        'start': {
-                            'avatar': B_post['avatar'],
-                            'name': B_user['screen_name_trans'],
-                            'content': B_text,
-                            'time': B_post['publish_time'],
-                            'media': B_post['img'],
-                            'repost': int(B_post['cnt_retweet']),
-                            'like': int(B_post['cnt_agree']),
-                            'comment': int(B_post['cnt_comment']),
-                            'fan': self.get_user_info(B_post['user_id'])['fan'],
-                            'highlight': [
-                                {
-                                    'begin': int(special_begin_index),
-                                    'end': int(special_end_index)
-                                }
-                            ]
-                        },
-                        'end': {
-                            'platform': platform_A,
-                            'avatar': B_post['avatar'],
-                            'name': B_user['screen_name_trans'],
-                            'content': A_text,
-                            'time': A_post['publish_time'],
-                            'media': A_post['img'],
-                            'repost': int(A_post['cnt_retweet']),
-                            'like': int(A_post['cnt_agree']),
-                            'comment': int(A_post['cnt_comment']),
-                            'fan': self.get_user_info(A_post['user_id'])['fan']
-                        }
-                    })
-                    # print(f"B mention A: {B_mention_A.shape[0]}")
+                # 检查B里面是否包含有A平台上特殊的词语
+                for idx,B_post in B_posts.iterrows():
+                    special_words = cpf.check_source_platform(B_post['text_trans'],A)
+                    B_user = self.get_user_info(B_post['user_id'])
+                    highlight = []
+                    if len(special_words) > 0:
+                        for word in special_words:
+                            special_begin_index = B_post['text_trans'].find(word)
+                            special_end_index = special_begin_index + len(word)
+                            highlight.append({
+                                'begin': special_begin_index,
+                                'end': special_end_index
+                            })
+                        output['callPlatformname'].append({
+                            'start': {
+                            },
+                            'end': {
+                                'avatar': B_post['avatar'],
+                                'name': B_user['screen_name_trans'],
+                                'content': B_post['text_trans'],
+                                'time': B_post['publish_time'],
+                                'media': B_post['img'],
+                                'repost': int(B_post['cnt_retweet']),
+                                'like': int(B_post['cnt_agree']),
+                                'comment': int(B_post['cnt_comment']),
+                                'fan': int(self.get_user_info(B_post['user_id'])['fan']),
+                                'highlight': highlight
+                            }
+                        })
         return output
 
     def get_flower_layout(self, platform_lists, event, date, cycle):
