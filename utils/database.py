@@ -55,6 +55,7 @@ def KOL_inf(df):
     return inf_df, noinf_df
 
 
+
 def tgt_post(user,post):
     """
     转换post
@@ -65,7 +66,7 @@ def tgt_post(user,post):
     new_post['id'] = post['post_id']
     new_post['user_id'] = post['user_id']
     new_post['avatar'] = post['avatar']
-    if post[post['from'] == 'weibo']:
+    if post['from'] == 'weibo':
         new_post['screen_name'] = None
     else:
         new_post['screen_name'] = post['screen_name']
@@ -88,13 +89,13 @@ def tgt_user(user,post):
     new_user = {}
     new_user['user_id'] = user['user_id']
     new_user['avatar'] = user['avatar']
-    if post[post['from'] == 'weibo']:
+    if post['from'] == 'weibo':
         new_user['screen_name'] = None
     else:
         new_user['screen_name'] = post['screen_name']
     new_user['name'] = user['screen_name_trans']
     new_user['description'] = user['description_trans']
-    new_user['fan'] = user['fan']
+    new_user['fan'] = int(user['fan'])
     new_user['type'] = user['type']
     if user['verified_reason_trans'] == None:
         new_user['validation'] = None
@@ -186,7 +187,7 @@ class DataBase:
         df_data = self.all_posts
         df_data = self.get_cluster_from_event(df_data,event)
         end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
         # 转换为2020-01-01格式
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
@@ -212,7 +213,7 @@ class DataBase:
                     new_post_list.append(new_post)
                     new_user = {}
 
-                    new_user = tgt_user(user_info,new_post)
+                    new_user = tgt_user(user_info,post)
                     new_user_list.append(new_user)
                 cluster['post'][platform] = new_post_list
                 cluster['user'][platform] = new_user_list
@@ -232,7 +233,7 @@ class DataBase:
         df_data = self.all_posts
         df_data = self.get_cluster_from_event(df_data,event)
         end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         # 获取当前时间窗口帖子的数量
@@ -243,6 +244,23 @@ class DataBase:
         for platform in platform_list:
             platform_posts = df_data[df_data['from'] == platform]
             cluster_name_list = platform_posts['cluster'].unique().tolist()
+            # 获取上述帖子的用户信息
+            user_info_score = {}
+            for idx, post in platform_posts.iterrows():
+                user_info = self.get_user_info(post['user_id'])
+                if post['cluster'] not in user_info_score:
+                    user_info_score[post['cluster']] = 0
+                if int(user_info['fan']) > 100 or user_info['validation']:
+                    if post['cluster'] in user_info_score:
+                        user_info_score[post['cluster']] += 1
+                    else:
+                        user_info_score[post['cluster']] = 1
+            user_info_rank = sorted(user_info_score.items(), key=lambda x: x[1], reverse=True)
+            # 把这个变成一个排名的字典
+            user_info_score = {}
+            for idx, item in enumerate(user_info_rank):
+                user_info_score[item[0]] = idx
+
             print(cluster_name_list)
             # 查找该平台的inf和 no_inf
             plt_inf_posts, _ = KOL_inf(platform_posts)
@@ -262,6 +280,11 @@ class DataBase:
             plt_inf_posts = plt_inf_posts.sort_values(by='counts', ascending=False).reset_index(drop=True)
             # print(plt_inf_posts)
             # 遍历cluster
+            max_post_count = 0
+            for cluster_name in cluster_name_list:
+                num = platform_posts[platform_posts['cluster'] == cluster_name].shape[0]
+                if num > max_post_count:
+                    max_post_count = num
             for cluster_name in cluster_name_list:
                 c_p_data = {}
                 c_p_data['name'] = cluster_name
@@ -277,10 +300,10 @@ class DataBase:
                 inf_rank = plt_inf_posts[plt_inf_posts['cluster'] == cluster_name].index[0] + 1
                 print(f"inf_posts: {inf_count}, rank: {inf_rank}")
                 c_p_data['core']['halfRings'] = {
-                    "infPost": len(cluster_name_list) - inf_rank / len(cluster_name_list),
-                    "infUser": inf_rank / len(cluster_name_list)
+                    "infPost": (len(cluster_name_list) - inf_rank) / len(cluster_name_list),
+                    "infUser": (len(cluster_name_list) - user_info_score[cluster_name]) / len(cluster_name_list)
                 }
-                c_p_data['core']['ring'] = cluster_posts.shape[0] / time_window_post_count
+                c_p_data['core']['ring'] = cluster_posts.shape[0] / max_post_count
                 c_p_data['core']['pollens'] = []
                 # 统计每个日期，单位是天
                 cluster_posts['publish_time_by_day'] = pd.to_datetime(cluster_posts['publish_time'])
@@ -309,7 +332,7 @@ class DataBase:
                         user_val = user_info['fan']
                         user_val = int(user_val)
                         c_p_data['core']['pollens'].append({
-                            'id': date.strftime('%Y-%m-%d'),
+                            'id': post['post_id'],
                             'value': post_val + user_val,
                             'emotion': post['sentiment_score'],
                             'postVal': post_val,
@@ -330,7 +353,7 @@ class DataBase:
         """
         df_data = self.all_posts
         end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         df_data = df_data[df_data['cluster'] == cluster]
@@ -356,7 +379,7 @@ class DataBase:
         """
         df_data = self.all_posts
         end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         # 转换cluster为idx
@@ -396,7 +419,7 @@ class DataBase:
         output = {}
         df_data = self.all_posts
         end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         # 转换cluster为idx
@@ -544,7 +567,7 @@ class DataBase:
         output = {}
         df_data = self.all_posts
         end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         # 按照聚类‘cluster’进行分组
@@ -588,7 +611,7 @@ class DataBase:
         output = []
         df_data = self.all_posts
         end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         df_data = df_data[df_data['cluster'] == cluster]
@@ -637,7 +660,7 @@ class DataBase:
     def get_history_relevance(self, platform_list, event, date, cycle, soure, target):
         df_data = self.all_posts
         end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
         start_time = start_time.strftime('%Y-%m-%d')
         # df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         s_post_id = soure
@@ -703,7 +726,7 @@ class DataBase:
         t_user = self.get_user_info(t_id)
         df_data = self.all_posts
         end_time = date
-        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
+        start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle-1)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] <= end_time)]
         s_df_data = df_data[df_data['from'] == platform_list[0]]

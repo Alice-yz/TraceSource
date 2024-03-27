@@ -177,7 +177,7 @@ def direct_refer(df, platform,col='text_trans'):
     df_spread = df[df[col].str.contains('|'.join(spread_list), na=False)]
     spread_num = df_spread.shape[0]
     # 加权求和
-    refer_score = (0.5 * refer_num + 0.5 * spread_num) /5
+    refer_score = (0.5 * refer_num + 0.5 * spread_num) / 5
     return refer_score
 
 def find_posts_with_engagement(df, threshold, col=["cnt_retweet", "cnt_agree", "cnt_comment"]):
