@@ -195,8 +195,11 @@ class DataBase:
         cluster_list = []
         # 根据event获取cluster
         cluster_id_list = self.event_dict[event]
+
         for cluster_id, cluster_name in self.cluster_dict.items():
             if cluster_id not in cluster_id_list:
+                continue
+            if df_data[df_data['cluster'] == cluster_name[0]].shape[0] == 0:
                 continue
             cluster = {}
             cluster['name'] = cluster_name[0]
@@ -673,6 +676,55 @@ class DataBase:
         user_output = {}
         user_output['name'] = 'Centser User'
         user_output[s_plat] = []
+
+        s_highlight = []
+        t_highlight = []
+        # 寻找s_history_post与t_history_post的directURL
+        s_history_post_url = ccf.find_posts_with_url(s_history_post, 'text')
+        t_history_post_url = ccf.find_posts_with_url(t_history_post, 'text')
+        s_history_post_url_list, s_post_id_list = ccf.find_same_url(s_history_post_url, 'text')
+        t_history_post_url_list, t_post_id_list = ccf.find_same_url(t_history_post_url, 'text')
+        same_url = list(set(s_history_post_url_list).intersection(set(t_history_post_url_list)))
+        same_url_count = len(same_url)
+        same_url_s_post_id = []
+        same_url_t_post_id = []
+        for url in same_url:
+            same_url_s_post_id.append(s_post_id_list[s_history_post_url_list.index(url)])
+            same_url_t_post_id.append(t_post_id_list[t_history_post_url_list.index(url)])
+        for i in range(len(same_url)):
+            s_post = s_history_post[s_history_post['post_id'] == same_url_s_post_id[i]].iloc[0]
+            t_post = t_history_post[t_history_post['post_id'] == same_url_t_post_id[i]].iloc[0]
+            s_text = s_post['text_trans']
+            t_text = t_post['text_trans']
+            s_index = s_text.find(same_url[i])
+            t_index = t_text.find(same_url[i])
+            if s_index == -1:
+                s_text = s_post['text_trans'] + f' {same_url[i]}'
+                s_begin_index = s_text.find(same_url[i])
+                s_end_index = s_begin_index + len(same_url[i])
+            else:
+                s_begin_index = s_index
+                s_end_index = s_begin_index + len(same_url[i])
+            if t_index == -1:
+                t_text = t_post['text_trans'] + f' {same_url[i]}'
+                t_begin_index = t_text.find(same_url[i])
+                t_end_index = t_begin_index + len(same_url[i])
+            else:
+                t_begin_index = t_index
+                t_end_index = t_begin_index + len(same_url[i])
+            t_highlight.append({
+                'begin': t_begin_index,
+                'end': t_end_index
+            })
+            s_highlight.append({
+                'begin': s_begin_index,
+                'end': s_end_index
+            })
+
+
+
+
+
         for index, row in s_history_post.iterrows():
             user_output[s_plat].append({
                 'id': row['post_id'],
@@ -686,7 +738,8 @@ class DataBase:
                 'like': row['cnt_agree'],
                 'repost': row['cnt_retweet'],
                 'comment': row['cnt_comment'],
-                'media': row['img']
+                'media': row['img'],
+                'highlight': s_highlight
             })
         candidate_output = {}
         candidate_output['name'] = 'Candidate User'
@@ -704,7 +757,8 @@ class DataBase:
                 'like': row['cnt_agree'],
                 'repost': row['cnt_retweet'],
                 'comment': row['cnt_comment'],
-                'media': row['img']
+                'media': row['img'],
+                'highlight': t_highlight
             })
         output.append(user_output)
         output.append(candidate_output)
