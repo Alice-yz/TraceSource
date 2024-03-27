@@ -13,6 +13,7 @@ from utils import cal_cluster_factor as ccf
 from langdetect import detect
 import nltk
 from nltk.corpus import stopwords
+import json
 # 下载停用词
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
@@ -325,6 +326,7 @@ if __name__ == '__main__':
     df_all_posts.where(df_all_posts.notnull(), None)
     df_all_accounts = pd.read_csv('all_accounts.csv',dtype={'user_id': str})
     df_all_accounts.where(df_all_accounts.notnull(), None)
+    output = {}
     hash_table = [
     ('Great_Wave_Kanagawa', "2021-04-20", "2021-04-29"),
     ('foreign_affairs_questions', '2021-04-20','2021-04-29'),
@@ -333,7 +335,7 @@ if __name__ == '__main__':
     ('240_china_nuclear_pollution','2023-08-21','2023-08-30'),
     ('70_billion_japan_water', '2023-08-21','2023-08-30'),
     ('cooling_water_nuclear_wastewater', '2023-08-21','2023-08-30'),
-    ('korean_...', '2023-08-21','2023-09-02'),
+    ('south_korea_nuclear_discharge', '2023-08-21','2023-09-02'),
     ('sue_TEPCO_japan', '2023-08-21','2023-08-30'),
     ('radioactive_pollution_japan_sea', '2023-08-21','2023-08-30'),
     ('treatment_japan_waste_nuclear', '2023-08-21','2023-08-30')
@@ -342,6 +344,7 @@ if __name__ == '__main__':
     # 提取中间一列作为 Python 列表
     debug = True
     for idx in range(len(hash_table)):
+        output_cluster = []
         start_time = hash_table[idx][1]
         end_time = hash_table[idx][2]
         cluster = cluster_names[idx]
@@ -356,7 +359,33 @@ if __name__ == '__main__':
         for idx_a in range(df_data_A.shape[0]):
             for idx_b in range(df_data_B.shape[0]):
                 print(f"=============================================")
-                factor,s_post,t_post,s_highlight,t_highlight,diffusion_pattern_type = cal_post_factor(df_data_A.iloc[idx_a],df_data_B.iloc[idx_b],df_data,debug,debug)
+                factor,s_post,t_post,s_highlight,t_highlight,diffusion_pattern = cal_post_factor(df_data_A.iloc[idx_a],df_data_B.iloc[idx_b],df_data,debug,debug)
+                print(f"{s_post['from']}-->{t_post['from']} ,Factor: {factor} Diffusion Pattern Type: {diffusion_pattern}")
+                print(f"source:{s_post['text']}")
+                print(f"target:{t_post['text']}")
+                output_cluster.append({
+                    "source":
+                        {
+                            "id": s_post["post_id"],
+                            "platform": s_post["from"],
+                            'highlight': s_highlight
+                        }
+                    ,
+                    "target": {
+                        "id": t_post["post_id"],
+                        "platform": t_post["from"],
+                        "highlight": t_highlight
+                    },
+                    "width": factor,
+                    "diffusion_pattern": diffusion_pattern
+                })
+        output[cluster] = output_cluster
+    # 把结果写入文件
+    # 把output转为json格式
+    output = json.dumps(output)
+    # 写入文件
+    with open('case1_post.json', 'w') as f:
+        json.dump(output, f)
 
 
 

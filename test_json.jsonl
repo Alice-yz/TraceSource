@@ -2,17 +2,17 @@
 //get_timeline
 {
   "names": [
-    "twitter"
+    "twitter","weibo"
   ],
-  "event": "election"
+  "event": "water"
 }
 //get_topic
 {
   "names": [
     "twitter","weibo"
   ],
-  "event": "election",
-  "date": "2024-03-01",
+  "event": "water",
+  "date": "2023-08-30",
   "cycle": 10
 }
 //get_flower
@@ -21,57 +21,48 @@
     "twitter","weibo"
   ],
   "event": "water",
-  "date": "2023-09-01",
+  "date": "2023-08-30",
   "cycle": 10
 }
 //get_flower_cloud
 {
   "names": "weibo",
-  "event": "election",
-  "date": "2024-03-01",
+  "event": "water",
+  "date": "2023-08-30",
   "cycle": 10,
-  "topic": "election"
+  "topic": "south_korea_nuclear_discharge"
 }
 //flower_post
 {
-  "names": "twitter",
-  "event": "election",
-  "date": "2024-02-01",
-  "cycle": 1,
-  "topic": "election"
+  "names": "weibo",
+  "event": "water",
+  "date": "2023-08-30",
+  "cycle": 10,
+  "topic": "south_korea_nuclear_discharge"
 }
 // link
 {
-  "names": "string",
-  "event": "election",
-  "date": "2024-02-01",
+  "event": "water",
+  "date": "2023-08-30",
   "cycle": 10,
-  "topic": "election",
-  "start": "2024-02-01",
-  "end": "2024-02-10"
+  "topic": "south_korea_nuclear_discharge",
+  "start": "2023-08-21",
+  "end": "2023-08-30"
 }
 //layout
 {
-  "names": ["weibo", "twitter","facebook"],
-  "event": "election",
-  "date": "2024-03-01",
+  "names": ["weibo", "twitter"],
+  "event": "water",
+  "date": "2023-08-30",
   "cycle": 10,
-  "topic": "election"
+  "topic": "south_korea_nuclear_discharge"
 }
 
-//
+// main view
 {
-  "names": ["weibo", "twitter","facebook"],
-  "event": "election",
-  "date": "2024-02-01",
-  "cycle": 10,
-  "topic": "election"
-}
-//
-{
-  "event": "election",
-  "topic": "election",
-  "date": "2024-02-01",
+  "event": "water",
+  "topic": "south_korea_nuclear_discharge",
+  "date": "2023-08-30",
   "cycle": 10,
   "flower_post": {
     "twitter": ["1749159384112845285","1765396693036523717"],
@@ -81,16 +72,16 @@
 //
 {
   "names": [
-    "weibo"
+    "twitter","weibo"
   ],
-  "event": "election",
-  "date": "2024-02-01",
-  "cycle": 0,
+  "event": "water",
+  "date": "2023-08-30",
+  "cycle": 10,
   "source": {
-    "twitter": "1749159384112845285"
+    "twitter": "1696197102299488646"
   },
   "target": {
-    "twitter": "1749131121114091648"
+    "weibo": "4941284538319609"
   }
 }
 //
@@ -98,13 +89,13 @@
   "names": [
     "weibo","twitter"
   ],
-  "event": "election",
-  "date": "2024-04-01",
-  "cycle": 10000,
+  "event": "water",
+  "date": "2023-08-30",
+  "cycle": 10,
   "source": {
-    "weibo": "2467791"
+    "weibo": "1989660417"
   },
   "target": {
-    "twitter": "2836421"
+    "twitter": "2775998016"
   }
 }

@@ -6,12 +6,7 @@ import os
 
 cp = APIRouter()
 # print(os.getcwd())
-db = database.DataBase('./data/ttest.csv', './data/user_info.csv')
-for index, row in db.all_posts.iterrows():
-    if index % 3 == 0:
-        db.all_posts.at[index, 'from'] = 'weibo'
-    if index % 3 == 1:
-        db.all_posts.at[index, 'from'] = 'facebook'
+db = database.DataBase('./data/case1/all_posts.csv','./data/case1/all_accounts.csv')
 
 class TimeLineRequest(BaseModel):
     names: List[str]

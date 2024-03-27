@@ -9,6 +9,7 @@ from utils import cal_cluster_factor as ccf
 from utils import cluster_level_main_view_layout as clmvl
 from utils import cal_post_factor as cpf
 from utils import lda
+import json
 
 warnings.filterwarnings('ignore')
 # 取消pandas的警告
@@ -99,17 +100,27 @@ class DataBase:
         self.all_users = read_csv_user(users_path)
         self.event = ["US2024Election", "Water"]
         self.cluster_dict = {
-            4: "chinese",
-            1: "korean",
-            2: "japanese",
-            3: "english",
-            5: "election"
+            1:('Great_Wave_Kanagawa', "2021-04-20", "2021-04-29"),
+            2:('foreign_affairs_questions', '2021-04-20', '2021-04-29'),
+            3:('japan_nuclear_wastewater', '2021-04-20', '2021-04-29'),
+            4:('radioactive_condemn_water', '2021-04-20', '2021-04-29'),
+            5:('240_china_nuclear_pollution', '2023-08-21', '2023-08-30'),
+            6:('70_billion_japan_water', '2023-08-21', '2023-08-30'),
+            7:('cooling_water_nuclear_wastewater', '2023-08-21', '2023-08-30'),
+            8:('south_korea_nuclear_discharge', '2023-08-21', '2023-09-02'),
+            9:('sue_TEPCO_japan', '2023-08-21', '2023-08-30'),
+            10:('radioactive_pollution_japan_sea', '2023-08-21', '2023-08-30'),
+            11:('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30')
         }
         self.event_dict = {
-            "election": [5],
-            "water": [4, 1, 2, 3]
+            "election": [],
+            "water": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         }
         self.platforms = ["weibo", "twitter", "facebook"]
+        self.case_posts = json.load(open('./data/case1/case1_post.json', 'r', encoding='utf-8'))
+        self.case_clusters = json.load(open('./data/case1/case1_cluster.json', 'r', encoding='utf-8'))
+
+
 
     def get_user_info(self, user_id):
         user_info = self.all_users[self.all_users['user_id'] == user_id]
@@ -119,6 +130,15 @@ class DataBase:
         else:
             user_info = user_info.iloc[0]
         return user_info
+
+    def get_cluster_from_event(self, df,event):
+        cluster_list =  self.event_dict[event]
+        cluster_name_list = []
+        for cluster_id in cluster_list:
+            cluster_name = self.cluster_dict[cluster_id][0]
+            cluster_name_list.append(cluster_name)
+        return df[df['cluster'].isin(cluster_name_list)]
+
 
     def get_time_line(self, platform, event, start_time="2020-01-01", end_time="2024-04-01"):
         """
@@ -130,7 +150,7 @@ class DataBase:
         :return:
         """
         df_data = self.all_posts[self.all_posts['from'] == platform]
-        df_data = df_data[df_data['event'] == event]
+        df_data = self.get_cluster_from_event(df_data,event)
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         df_data['publish_time'] = pd.to_datetime(df_data['publish_time'])
         df_data['publish_time'] = df_data['publish_time'].dt.date
@@ -154,7 +174,7 @@ class DataBase:
         :return:
         """
         df_data = self.all_posts
-        df_data = df_data[df_data['event'] == event]
+        df_data = self.get_cluster_from_event(df_data,event)
         end_time = date
         start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         # 转换为2020-01-01格式
@@ -168,8 +188,8 @@ class DataBase:
             if cluster_id not in cluster_id_list:
                 continue
             cluster = {}
-            cluster['name'] = cluster_name
-            cluster_posts = df_data[df_data['cluster'] == cluster_id]
+            cluster['name'] = cluster_name[0]
+            cluster_posts = df_data[df_data['cluster'] == cluster_name[0]]
             cluster['post'] = {}
             for platform in platform_list:
                 post_lists = cluster_posts[cluster_posts['from'] == platform].to_dict(orient='records')
@@ -198,7 +218,7 @@ class DataBase:
         """
         return_data = []
         df_data = self.all_posts
-        df_data = df_data[df_data['event'] == event]
+        df_data = self.get_cluster_from_event(df_data,event)
         end_time = date
         start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
@@ -206,49 +226,47 @@ class DataBase:
         # 获取当前时间窗口帖子的数量
         time_window_post_count = df_data.shape[0]
         # 根据event获取cluster
-        cluster_id_list = self.event_dict[event]
         # 获取平台-聚类
         # 遍历平台
         for platform in platform_list:
             platform_posts = df_data[df_data['from'] == platform]
-            cluster_id_list = platform_posts['cluster'].astype(int).unique().tolist()
-            print(cluster_id_list)
+            cluster_name_list = platform_posts['cluster'].unique().tolist()
+            print(cluster_name_list)
             # 查找该平台的inf和 no_inf
             plt_inf_posts, _ = KOL_inf(platform_posts)
             # 按照聚类进行分组
             plt_inf_posts = plt_inf_posts.groupby('cluster')
             # 统计每个分组的帖子数量
             plt_inf_posts = plt_inf_posts.size().reset_index(name='counts')
-            plt_inf_posts['cluster'] = plt_inf_posts['cluster'].astype(int)
             print(plt_inf_posts)
             # 查找哪个cluster没有inf_posts
-            for cluster_id in cluster_id_list:
-                if cluster_id not in plt_inf_posts['cluster'].tolist():
+            for cluster_name in cluster_name_list:
+                if cluster_name not in plt_inf_posts['cluster'].tolist():
                     # print(f"cluster {cluster_id} has not in inf_posts")
                     # 如果没有inf_posts，那么inf_posts数量为0，pdFrame添加一行数据
-                    plt_inf_posts.loc[plt_inf_posts.shape[0]] = [cluster_id, 0]
+                    plt_inf_posts.loc[plt_inf_posts.shape[0]] = [cluster_name, 0]
                 print(plt_inf_posts)
             # 按照帖子数量排序，并且重置index
             plt_inf_posts = plt_inf_posts.sort_values(by='counts', ascending=False).reset_index(drop=True)
             # print(plt_inf_posts)
             # 遍历cluster
-            for cluster_id in cluster_id_list:
+            for cluster_name in cluster_name_list:
                 c_p_data = {}
-                c_p_data['name'] = self.cluster_dict[cluster_id]
+                c_p_data['name'] = cluster_name
                 c_p_data['platform'] = platform
                 c_p_data['petals'] = []
                 c_p_data['core'] = {}
-                print(f"====platform: {platform}, cluster {cluster_id}: {c_p_data['name']}====")
-                cluster_posts = platform_posts[platform_posts['cluster'] == cluster_id]
+                print(f"====platform: {platform}, cluster {cluster_name}: {c_p_data['name']}====")
+                cluster_posts = platform_posts[platform_posts['cluster'] == cluster_name]
                 # 计算该聚类的inf和noinf
                 inf_posts, noinf_posts = KOL_inf(cluster_posts)
                 # 计算inf_posts的数量排plt_inf_posts第几位
                 inf_count = inf_posts.shape[0]
-                inf_rank = plt_inf_posts[plt_inf_posts['cluster'] == cluster_id].index[0] + 1
+                inf_rank = plt_inf_posts[plt_inf_posts['cluster'] == cluster_name].index[0] + 1
                 print(f"inf_posts: {inf_count}, rank: {inf_rank}")
                 c_p_data['core']['halfRings'] = {
-                    "infPost": len(cluster_id_list) - inf_rank / len(cluster_id_list),
-                    "infUser": inf_rank / len(cluster_id_list)
+                    "infPost": len(cluster_name_list) - inf_rank / len(cluster_name_list),
+                    "infUser": inf_rank / len(cluster_name_list)
                 }
                 c_p_data['core']['ring'] = cluster_posts.shape[0] / time_window_post_count
                 c_p_data['core']['pollens'] = []
@@ -303,9 +321,7 @@ class DataBase:
         start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
-        # 转换cluster为idx
-        cluster_idx = list(self.cluster_dict.keys())[list(self.cluster_dict.values()).index(cluster)]
-        df_data = df_data[df_data['cluster'] == cluster_idx]
+        df_data = df_data[df_data['cluster'] == cluster]
         df_data = df_data[df_data['from'] == platform]
         freq_list = freq.get_word_freq_list(df_data['text_trans'])  # [(word,number),...]
         output = []
@@ -332,8 +348,7 @@ class DataBase:
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         # 转换cluster为idx
-        cluster_idx = list(self.cluster_dict.keys())[list(self.cluster_dict.values()).index(cluster)]
-        df_data = df_data[df_data['cluster'] == cluster_idx]
+        df_data = df_data[df_data['cluster'] == cluster]
         platform_data = df_data[df_data['from'] == platform]
         # 按照时间分类
         platform_data['publish_time_by_day'] = pd.to_datetime(platform_data['publish_time'])
@@ -373,8 +388,7 @@ class DataBase:
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         # 转换cluster为idx
-        cluster_idx = list(self.cluster_dict.keys())[list(self.cluster_dict.values()).index(cluster)]
-        df_data = df_data[df_data['cluster'] == cluster_idx]
+        df_data = df_data[df_data['cluster'] == cluster]
         print(df_data.shape[0])
         output['sameURL'] = []
         output['directURL'] = []
@@ -520,31 +534,40 @@ class DataBase:
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         # 按照聚类‘cluster’进行分组
-        df_cluster = df_data.groupby('cluster')
+        # df_cluster = df_data.groupby('cluster')
         # 遍历分组
-        cluster_prop_list = {}
-        for cluster_id, cluster_data in df_cluster:
-            cluster_name = self.cluster_dict[cluster_id]
-            # print(f"cluster: {cluster_name}")
-            cluster_prop_list[cluster_name] = []
-            # 遍历平台
-            for A in range(len(platform_lists)):
-                for B in range(A + 1, len(platform_lists)):
-                    # print(f"platform: {platform_lists[A]} -> {platform_lists[B]}")
-                    # A -> B
-                    p_A2B, _, _ = ccf.cal_cluster_factor(platform_lists[A], platform_lists[B], df_data, date, cycle,
-                                                         self.all_posts, self.all_users)
-                    p_B2A, _, _ = ccf.cal_cluster_factor(platform_lists[B], platform_lists[A], df_data, date, cycle,
-                                                         self.all_posts, self.all_users)
-                    if p_A2B > p_B2A:
-                        p = p_A2B
-                        cluster_prop_list[cluster_name].append([platform_lists[A], platform_lists[B], p])
-                        print(f"cluster: {cluster_name}, {platform_lists[A]} -> {platform_lists[B]}: {p}")
-                    else:
-                        p = p_B2A
-                        cluster_prop_list[cluster_name].append([platform_lists[B], platform_lists[A], p])
-                        print(f"cluster: {cluster_name}, {platform_lists[B]} -> {platform_lists[A]}: {p}")
-        output = clmvl.generate_cluster_level_layout(platform_lists, cluster_prop_list)
+        # cluster_prop_list = {}
+        # for cluster_id, cluster_data in df_cluster:
+        #     cluster_name = self.cluster_dict[cluster_id]
+        #     # print(f"cluster: {cluster_name}")
+        #     cluster_prop_list[cluster_name] = []
+        #     # 遍历平台
+        #     for A in range(len(platform_lists)):
+        #         for B in range(A + 1, len(platform_lists)):
+        #             # print(f"platform: {platform_lists[A]} -> {platform_lists[B]}")
+        #             # A -> B
+        #             p_A2B, _, _ = ccf.cal_cluster_factor(platform_lists[A], platform_lists[B], df_data, date, cycle,
+        #                                                  self.all_posts, self.all_users)
+        #             p_B2A, _, _ = ccf.cal_cluster_factor(platform_lists[B], platform_lists[A], df_data, date, cycle,
+        #                                                  self.all_posts, self.all_users)
+        #             if p_A2B > p_B2A:
+        #                 p = p_A2B
+        #                 cluster_prop_list[cluster_name].append([platform_lists[A], platform_lists[B], p])
+        #                 print(f"cluster: {cluster_name}, {platform_lists[A]} -> {platform_lists[B]}: {p}")
+        #             else:
+        #                 p = p_B2A
+        #                 cluster_prop_list[cluster_name].append([platform_lists[B], platform_lists[A], p])
+        #                 print(f"cluster: {cluster_name}, {platform_lists[B]} -> {platform_lists[A]}: {p}")
+        # 根据时间匹配cluster
+        # 遍历cluster
+        topic_prop_ability = {}
+        for key, value in self.cluster_dict.items():
+            cluster_name = value[0]
+            cluster_start_time = value[1]
+            cluster_end_time = value[2]
+            if cluster_start_time <= date <= cluster_end_time:
+                topic_prop_ability[cluster_name] = self.case_clusters[cluster_name]
+        output = clmvl.generate_cluster_level_layout(platform_lists, topic_prop_ability)
         return output
 
     def get_main_view(self, event, cluster, date, cycle, flower_posts):
@@ -554,9 +577,7 @@ class DataBase:
         start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
-        # 转换cluster为idx
-        cluster_idx = list(self.cluster_dict.keys())[list(self.cluster_dict.values()).index(cluster)]
-        df_data = df_data[df_data['cluster'] == cluster_idx]
+        df_data = df_data[df_data['cluster'] == cluster]
         # 获取当前时间窗口帖子的数量
         time_window_post_count = df_data.shape[0]
         print(f"time_window_post_count: {time_window_post_count}")
@@ -568,28 +589,35 @@ class DataBase:
         platform_B = key[1]
         platform_A_posts_ids = flower_posts[platform_A]
         platform_B_posts_ids = flower_posts[platform_B]
-        for A in platform_A_posts_ids:
-            for B in platform_B_posts_ids:
-                post_A = self.all_posts[self.all_posts['post_id'] == A].iloc[0]
-                post_B = self.all_posts[self.all_posts['post_id'] == B].iloc[0]
-                p, s_plat, t_plat, s_highlight, t_highlight, diffusion_pattern = cpf.cal_post_factor(post_A, post_B,
-                                                                                                     df_data, self)
-                output.append({
-                    "source":
-                        {
-                            "id": s_plat['post_id'],
-                            "platform": s_plat['from'],
-                            'highlight': s_highlight
-                        }
-                    ,
-                    "target": {
-                        "id": t_plat['post_id'],
-                        "platform": t_plat['from'],
-                        'highlight': t_highlight
-                    },
-                    "width": p,
-                    "diffusion_pattern": diffusion_pattern
-                })
+        ######### 真实计算数据
+        # for A in platform_A_posts_ids:
+        #     for B in platform_B_posts_ids:
+        #         post_A = self.all_posts[self.all_posts['post_id'] == A].iloc[0]
+        #         post_B = self.all_posts[self.all_posts['post_id'] == B].iloc[0]
+        #         p, s_plat, t_plat, s_highlight, t_highlight, diffusion_pattern = cpf.cal_post_factor(post_A, post_B,
+        #                                                                                              df_data, self)
+        #         output.append({
+        #             "source":
+        #                 {
+        #                     "id": s_plat['post_id'],
+        #                     "platform": s_plat['from'],
+        #                     'highlight': s_highlight
+        #                 }
+        #             ,
+        #             "target": {
+        #                 "id": t_plat['post_id'],
+        #                 "platform": t_plat['from'],
+        #                 'highlight': t_highlight
+        #             },
+        #             "width": p,
+        #             "diffusion_pattern": diffusion_pattern
+        #         })
+        ###############case1数据
+        print(cluster)
+        print(self.case_posts)
+        # 把str转换为json
+        json_data = json.loads(self.case_posts)
+        output = json_data[cluster]
         return output
 
     def get_history_relevance(self, platform_list, event, date, cycle, soure, target):
@@ -597,7 +625,7 @@ class DataBase:
         end_time = date
         start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
-        df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
+        # df_data = df_data[(df_data['publish_time'] >= start_time) & (df_data['publish_time'] <= end_time)]
         s_post_id = soure
         t_post_id = target
         s_post = df_data[df_data['post_id'] == s_post_id].iloc[0]

@@ -296,7 +296,7 @@ if __name__ == '__main__':
     ('240_china_nuclear_pollution','2023-08-21','2023-08-30'),
     ('70_billion_japan_water', '2023-08-21','2023-08-30'),
     ('cooling_water_nuclear_wastewater', '2023-08-21','2023-08-30'),
-    ('korean_...', '2023-08-21','2023-08-30'),
+    ('south_korea_nuclear_discharge', '2023-08-21','2023-08-30'),
     ('sue_TEPCO_japan', '2023-08-21','2023-08-30'),
     ('radioactive_pollution_japan_sea', '2023-08-21','2023-08-30'),
     ('treatment_japan_waste_nuclear', '2023-08-21','2023-08-30')
@@ -304,10 +304,12 @@ if __name__ == '__main__':
     cluster_names = [item[0] for item in hash_table]
     # 提取中间一列作为 Python 列表
     debug = False
+    output = {}
     for idx in range(len(hash_table)):
         start_time = hash_table[idx][1]
         end_time = hash_table[idx][2]
         cluster = cluster_names[idx]
+        output[cluster] = []
         A = 'weibo'
         B = 'twitter'
         print(f"============== cluster: {cluster} ====================")
@@ -317,8 +319,14 @@ if __name__ == '__main__':
         p2,_,_ = cal_cluster_factor(B,A,df_data,end_time,cycle,df_all_posts,df_all_accounts,debug)
         if p1 > p2:
             print(f"$$$$$$ {A}------>{B} $$$$$$ p = {p1}  $$$$$$")
+            output[cluster].append([A,B,p1])
         else:
             print(f"$$$$$$ {B}------>{A} $$$$$$ p = {p2}  $$$$$$")
+            output[cluster].append([B,A,p2])
+    # 保存结果
+    import json
+    with open('case1_cluster.json', 'w') as f:
+        json.dump(output, f)
 
     # idx = 3
     #
