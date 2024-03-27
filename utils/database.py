@@ -192,6 +192,7 @@ class DataBase:
             cluster['name'] = cluster_name[0]
             cluster_posts = df_data[df_data['cluster'] == cluster_name[0]]
             cluster['post'] = {}
+            cluster['user'] = {}
             for platform in platform_list:
                 post_lists = cluster_posts[cluster_posts['from'] == platform].to_dict(orient='records')
                 new_post_list = []
@@ -204,7 +205,7 @@ class DataBase:
                     new_user = tgt_user(user_info)
                     new_user_list.append(new_user)
                 cluster['post'][platform] = new_post_list
-                cluster['user'] = new_user_list
+                cluster['user'][platform] = new_user_list
             cluster_list.append(cluster)
         return cluster_list
 
