@@ -385,56 +385,59 @@ if __name__ == '__main__':
     cluster_names = [item[0] for item in hash_table]
     # 提取中间一列作为 Python 列表
     # debug = True
-    # for idx in range(len(hash_table)):
-    #     if idx == 1 or idx == 2 or idx == 3 or idx == 9 or idx == 10:
-    #         continue
-    idx = 11
-    output_cluster = []
-    start_time = hash_table[idx][1]
-    end_time = hash_table[idx][2]
-    cluster = cluster_names[idx]
-    # end_time 加一天
-    end_time = (pd.to_datetime(end_time) + pd.DateOffset(days=1)).strftime('%Y-%m-%d')
-    A = 'weibo'
-    B = 'twitter'
-    df_data = df_all_posts[
-        (df_all_posts['publish_time'] >= start_time) & (df_all_posts['publish_time'] <= end_time)]
-    # 要求query不是highlight
-    # df_data = df_data[df_data['query'] != 'highlight']
-    # df_data = df_data[df_data['query'] == 'highlight']
-    df_data = df_data[df_data['cluster'] == cluster]
-    df_data_A = df_data[df_data['from'] == A]
-    df_data_B = df_data[df_data['from'] == B]
-    print(f"Cluster: {cluster}  df_data shape: {df_data.shape[0]} df_data_A shape: {df_data_A.shape[0]} df_data_B shape: {df_data_B.shape[0]}")
-    debug = False
-    post_num = 0
-    ### 先解决PPT中提到的
-    select_data = []
-    idx_rand_a = 0
-    idx_rand_b = 0
-    select_data.append((idx_rand_a, idx_rand_b))
-    for idx_a in range(df_data_A.shape[0]):
-        for idx_b in range(df_data_B.shape[0]):
-            # if (idx_rand_a, idx_rand_b) in select_data:
-            #     idx_rand_a = np.random.randint(0, df_data_A.shape[0])
-            #     idx_rand_b = np.random.randint(0, df_data_B.shape[0])
-            #     while (idx_rand_a, idx_rand_b) in select_data:
-            #         idx_rand_a = np.random.randint(0, df_data_A.shape[0])
-            #         idx_rand_b = np.random.randint(0, df_data_B.shape[0])
-            #     select_data.append((idx_rand_a, idx_rand_b))
-            factor, s_post, t_post, s_highlight, t_highlight, diffusion_pattern = cal_post_factor(
-                df_data_A.iloc[idx_a], df_data_B.iloc[idx_b], df_data, debug, debug)
-            print(f"Cluster: {cluster}({idx_rand_a}{idx_rand_b})-|- {s_post['from']}-->{t_post['from']} ,Factor: {factor} Diffusion Pattern Type: {diffusion_pattern}")
-            # print(f"source:{s_post['text']}")
-            # print(f"target:{t_post['text']}")
-            # input_str =  input("Enter y is assigned, n is not assigned:\n")
-            # is_assigned = True if input_str == 'y' else False
-            output_cluster.append(format_post(s_post, t_post, s_highlight, t_highlight, factor, diffusion_pattern,False))
-            # print(is_assigned)
-            # post_num += 1
-            # if post_num > 60:
-            #     break
-    output[cluster] = output_cluster
+    for idx in range(len(hash_table)):
+        if idx == 1 or idx == 2 or idx == 3 or idx == 9 or idx == 10 or idx == 11:
+            continue
+        # idx = 11
+        output_cluster = []
+        start_time = hash_table[idx][1]
+        end_time = hash_table[idx][2]
+        cluster = cluster_names[idx]
+        # end_time 加一天
+        end_time = (pd.to_datetime(end_time) + pd.DateOffset(days=1)).strftime('%Y-%m-%d')
+        A = 'weibo'
+        B = 'twitter'
+        df_data = df_all_posts[
+            (df_all_posts['publish_time'] >= start_time) & (df_all_posts['publish_time'] <= end_time)]
+        # 要求query不是highlight
+        df_data = df_data[df_data['query'] != 'highlight']
+        # df_data = df_data[df_data['query'] == 'highlight']
+        df_data = df_data[df_data['cluster'] == cluster]
+        df_data_A = df_data[df_data['from'] == A]
+        df_data_B = df_data[df_data['from'] == B]
+        print(f"Cluster: {cluster}  df_data shape: {df_data.shape[0]} df_data_A shape: {df_data_A.shape[0]} df_data_B shape: {df_data_B.shape[0]}")
+        debug = False
+        post_num = 0
+        ### 先解决PPT中提到的
+        select_data = []
+        idx_rand_a = 0
+        idx_rand_b = 0
+        select_data.append((idx_rand_a, idx_rand_b))
+        for idx_a in range(df_data_A.shape[0]):
+            for idx_b in range(df_data_B.shape[0]):
+                if (idx_rand_a, idx_rand_b) in select_data:
+                    idx_rand_a = np.random.randint(0, df_data_A.shape[0])
+                    idx_rand_b = np.random.randint(0, df_data_B.shape[0])
+                    while (idx_rand_a, idx_rand_b) in select_data:
+                        idx_rand_a = np.random.randint(0, df_data_A.shape[0])
+                        idx_rand_b = np.random.randint(0, df_data_B.shape[0])
+                    select_data.append((idx_rand_a, idx_rand_b))
+                post_num += 1
+                factor, s_post, t_post, s_highlight, t_highlight, diffusion_pattern = cal_post_factor(
+                    df_data_A.iloc[idx_rand_a], df_data_B.iloc[idx_rand_b], df_data, debug, debug)
+                print(f"{post_num}:Cluster: {cluster}({idx_rand_a},{idx_rand_b})-|- {s_post['from']}-->{t_post['from']} ,Factor: {factor} Diffusion Pattern Type: {diffusion_pattern}")
+                # print(f"source:{s_post['text']}")
+                # print(f"target:{t_post['text']}")
+                # input_str =  input("Enter y is assigned, n is not assigned:\n")
+                # is_assigned = True if input_str == 'y' else False
+                output_cluster.append(format_post(s_post, t_post, s_highlight, t_highlight, factor, diffusion_pattern,False))
+                # print(is_assigned)
+
+                if post_num > 50:
+                    break
+            if post_num > 50:
+                break
+        output[cluster] = output_cluster
     # 写入文件
-    with open(f'./json/{cluster}.json', 'w',encoding='utf-8') as f:
+    with open(f'./json/post_other.json', 'w',encoding='utf-8') as f:
         f.write(json.dumps(output, ensure_ascii=False,indent=4))
