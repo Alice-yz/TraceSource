@@ -184,6 +184,9 @@ class DataBase:
                 fake_data['x'] = start_fake_date.strftime('%Y-%m-%d')
                 fake_data['y'] = np.random.randint(1, 10)
                 data_list.append(fake_data)
+            if '2023-12-02' <= start_fake_date.strftime('%Y-%m-%d') <= '2023-12-11':
+                fake_data['y'] = np.random.randint(5, 20)
+                data_list.append(fake_data)
             start_fake_date += pd.Timedelta(days=1)
         # 对data_list按照x进行排序
         data_list = sorted(data_list, key=lambda x: x['x'])
