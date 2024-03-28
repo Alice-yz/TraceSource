@@ -130,7 +130,7 @@ class DataBase:
         self.platforms = ["weibo", "twitter", "facebook"]
         self.case_posts = json.load(open('./data/case1/case1_post.json', 'r', encoding='utf-8'))
         self.case_clusters = json.load(open('./data/case1/case1_cluster.json', 'r', encoding='utf-8'))
-        self.case_posts_other = json.load(open('./data/case1/case1_post_other.json', 'r', encoding='utf-8'))
+        # self.case_posts_other = json.load(open('./data/case1/case1_post_other.json', 'r', encoding='utf-8'))
 
 
 
