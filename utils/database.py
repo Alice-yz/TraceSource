@@ -135,9 +135,9 @@ class DataBase:
 
 
 
-    def get_user_info(self, user_id):
+    def get_user_info(self, user_id, platform=None):
         user_info = self.all_users[self.all_users['user_id'] == user_id]
-        if user_info.empty:
+        if user_info is None or user_info.shape[0] == 0:
             # 最后一行是假数据
             user_info = self.all_users.iloc[-1]
         else:
@@ -866,8 +866,10 @@ class DataBase:
         output = {}
         output[platform_list[0]] = []
         output[platform_list[1]] = []
-        s_user = self.get_user_info(s_id)
-        t_user = self.get_user_info(t_id)
+        s_user_id = self.all_posts[self.all_posts['post_id'] == s_id].iloc[0]['user_id']
+        t_user_id = self.all_posts[self.all_posts['post_id'] == t_id].iloc[0]['user_id']
+        s_user = self.get_user_info(s_user_id)
+        t_user = self.get_user_info(t_user_id)
         df_data = self.all_posts
         end_time = (pd.to_datetime(date)+pd.Timedelta(days=1)).strftime('%Y-%m-%d')
         start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
