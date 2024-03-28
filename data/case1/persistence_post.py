@@ -199,7 +199,7 @@ def cal_post_factor(post_A, post_B, df_data, self, debug=False):
     sim_description = calculate_bert_similarity(s_description, t_description, model_mut)
     # print(f"sim_description: {sim_description}")
     sim_userinfo = 0.5 * username_sim + 0.5 * sim_description
-    if t_user['type'] == None:
+    if t_user['type'] == None or pd.isna(t_user['type']):
         t_SNS = -1
     else:
         t_SNS = 1
@@ -216,9 +216,9 @@ def cal_post_factor(post_A, post_B, df_data, self, debug=False):
             if word in t_post['text_trans']:
                 flag = True
                 break
-    if sim_userinfo > 0.5:
+    if sim_userinfo >= 0.5:
         diffusion_pattern_type = 0
-    elif 0.3 < sim_userinfo <= 0.5 or t_SNS > 0 or flag:
+    elif 0.3 <= sim_userinfo < 0.5 or t_SNS > 0 or flag:
         diffusion_pattern_type = 1
     else:
         diffusion_pattern_type = 2
@@ -332,22 +332,24 @@ def cal_post_factor(post_A, post_B, df_data, self, debug=False):
     return factor, s_post, t_post, s_highlight, t_highlight, diffusion_pattern_type
 
 
-def format_post(s_post, t_post, s_highlight, t_highlight, factor, diffusion_pattern):
+def format_post(s_post, t_post, s_highlight, t_highlight, factor, diffusion_pattern,is_assigned):
     return {
-        "source":
-            {
-                "id": s_post["post_id"],
-                "platform": s_post["from"],
-                'highlight': s_highlight
-            }
+        "source":{
+            "id": s_post["post_id"],
+            "platform": s_post["from"],
+            'highlight': s_highlight,
+            'text': str(s_post['text'])
+        }
         ,
         "target": {
             "id": t_post["post_id"],
             "platform": t_post["from"],
-            "highlight": t_highlight
+            "highlight": t_highlight,
+            'text': str(t_post['text'])
         },
         "width": factor,
-        "diffusion_pattern": diffusion_pattern
+        "diffusion_pattern": diffusion_pattern,
+        "is_assigned": is_assigned
     }
 
 
@@ -373,42 +375,36 @@ if __name__ == '__main__':
     cluster_names = [item[0] for item in hash_table]
     # 提取中间一列作为 Python 列表
     # debug = True
-    for idx in range(len(hash_table)):
-        output_cluster = {}
-        start_time = hash_table[idx][1]
-        end_time = hash_table[idx][2]
-        cluster = cluster_names[idx]
-        A = 'weibo'
-        B = 'twitter'
-        df_data = df_all_posts[
-            (df_all_posts['publish_time'] >= start_time) & (df_all_posts['publish_time'] <= end_time)]
-        df_data = df_data[df_data['query'] == 'highlight']
-        df_data = df_data[df_data['cluster'] == cluster]
-        print(f"Cluster: {cluster}  df_data shape: {df_data.shape[0]}")
-        df_data_A = df_data[df_data['from'] == A]
-        df_data_B = df_data[df_data['from'] == B]
-        debug = False
-        for idx_a in range(df_data_A.shape[0]):
-            for idx_b in range(df_data_B.shape[0]):
-                print(f"=============================================")
-                factor, s_post, t_post, s_highlight, t_highlight, diffusion_pattern = cal_post_factor(
-                    df_data_A.iloc[idx_a], df_data_B.iloc[idx_b], df_data, debug, debug)
-                print(
-                    f"{s_post['from']}-->{t_post['from']} ,Factor: {factor} Diffusion Pattern Type: {diffusion_pattern}")
-                print(f"source:{s_post['text']}")
-                print(f"target:{t_post['text']}")
-                if s_post['post_id'] in output_cluster:
-                    output_cluster[s_post['post_id']].append(format_post(s_post, t_post, s_highlight, t_highlight, factor,diffusion_pattern))
-                else:
-                    output_cluster[s_post['post_id']] = [format_post(s_post, t_post, s_highlight, t_highlight, factor,diffusion_pattern)]
-                if t_post['post_id'] in output_cluster:
-                    output_cluster[t_post['post_id']].append(format_post(s_post, t_post, s_highlight, t_highlight, factor,diffusion_pattern))
-                else:
-                    output_cluster[t_post['post_id']] = [format_post(s_post, t_post, s_highlight, t_highlight, factor,diffusion_pattern)]
-        output[cluster] = output_cluster
-    # 把结果写入文件
-    # 把output转为json格式
-    output = json.dumps(output)
+    # for idx in range(len(hash_table)):
+    idx =6
+    output_cluster = []
+    start_time = hash_table[idx][1]
+    end_time = hash_table[idx][2]
+    cluster = cluster_names[idx]
+    A = 'weibo'
+    B = 'twitter'
+    df_data = df_all_posts[
+        (df_all_posts['publish_time'] >= start_time) & (df_all_posts['publish_time'] <= end_time)]
+    df_data = df_data[df_data['query'] == 'highlight']
+    df_data = df_data[df_data['cluster'] == cluster]
+    print(f"Cluster: {cluster}  df_data shape: {df_data.shape[0]}")
+    df_data_A = df_data[df_data['from'] == A]
+    df_data_B = df_data[df_data['from'] == B]
+    debug = False
+    ### 先解决PPT中提到的
+    for idx_a in range(df_data_A.shape[0]):
+        for idx_b in range(df_data_B.shape[0]):
+            print(f"=============================================")
+            factor, s_post, t_post, s_highlight, t_highlight, diffusion_pattern = cal_post_factor(
+                df_data_A.iloc[idx_a], df_data_B.iloc[idx_b], df_data, debug, debug)
+            print(f"{s_post['from']}-->{t_post['from']} ,Factor: {factor} Diffusion Pattern Type: {diffusion_pattern}")
+            print(f"source:{s_post['text']}")
+            print(f"target:{t_post['text']}")
+            # input_str =  input("Enter y is assigned, n is not assigned:\n")
+            # is_assigned = True if input_str == 'y' else False
+            output_cluster.append(format_post(s_post, t_post, s_highlight, t_highlight, factor, diffusion_pattern,False))
+            # print(is_assigned)
+    output[cluster] = output_cluster
     # 写入文件
-    # with open('case1_post.json', 'w') as f:
-    #     json.dump(output, f)
+    # with open(f'./json/{cluster}.json', 'w',encoding='utf-8') as f:
+    #     f.write(json.dumps(output, ensure_ascii=False,indent=4))
