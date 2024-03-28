@@ -330,6 +330,8 @@ class DataBase:
                     date = row['publish_time_by_day']
                     count = row['counts']
                     posts = cluster_posts[cluster_posts['publish_time_by_day'] == date]
+                    # posts去重
+                    posts = posts.drop_duplicates(subset='user_id')
                     inf_posts, noinf_posts = KOL_inf(posts)
                     c_p_data['petals'].append({
                         'day': date.strftime('%Y-%m-%d'),
@@ -341,6 +343,7 @@ class DataBase:
                         'category': 'noinfpost',
                         'value': noinf_posts.shape[0]
                     })
+
                     for idx, post in posts.iterrows():
                         user_info = self.get_user_info(post['user_id'])
                         post_val = post['cnt_retweet'] + post['cnt_agree'] + post['cnt_comment']
