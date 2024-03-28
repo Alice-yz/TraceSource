@@ -178,11 +178,17 @@ def cal_post_factor(post_A, post_B, df_data, self, debug=False):
     jaro_sim = Levenshtein.jaro(s_user['name'], t_user['name'])
     # 跨语言用bert
     bert_sim = calculate_bert_similarity(s_user['name'], t_user['name'], model_mut)
-    if detect(s_user['name']) != detect(t_user['name']):
-        username_sim = bert_sim
+    if s_user['name'] == None or pd.isna(s_user['name']) or t_user['name'] == None or pd.isna(t_user['name']):
+        username_sim = 0
     else:
-        username_sim = jaro_sim
-    # print(f"jaro_sim: {jaro_sim}")
+        try:
+            if detect(s_user['name']) != detect(t_user['name']):
+                username_sim = bert_sim
+            else:
+                username_sim = jaro_sim
+        except:
+            username_sim = jaro_sim
+        # print(f"jaro_sim: {jaro_sim}")
     ########### Sim User description ###########
     s_description = s_user['description']
     t_description = t_user['description']
@@ -244,33 +250,36 @@ def cal_post_factor(post_A, post_B, df_data, self, debug=False):
     t_tokenized = [doc.lower().split() for doc in t_all_docs]
     s_tokenized = [[word for word in doc if word not in stop_words] for doc in s_tokenized]
     t_tokenized = [[word for word in doc if word not in stop_words] for doc in t_tokenized]
-    if s_tokenized == [] or t_tokenized == []:
+    try:
+        if s_tokenized == [] or t_tokenized == []:
+            sim_interest = 0
+        else:
+            s_dictionary = corpora.Dictionary(s_tokenized)
+            t_dictionary = corpora.Dictionary(t_tokenized)
+            s_corpus = [s_dictionary.doc2bow(text) for text in s_tokenized]
+            t_corpus = [t_dictionary.doc2bow(text) for text in t_tokenized]
+            s_lda = gensim.models.LdaModel(s_corpus, num_topics=10, id2word=s_dictionary, passes=15, random_state=42)
+            t_lda = gensim.models.LdaModel(t_corpus, num_topics=10, id2word=t_dictionary, passes=15, random_state=42)
+            # pprint(s_lda.print_topics())
+            # pprint(t_lda.print_topics())
+            s_dist = s_lda.get_document_topics(s_corpus)
+            t_dist = t_lda.get_document_topics(t_corpus)
+            kl_divergence = 0
+            for s_doc, t_doc in zip(s_dist, t_dist):
+                for (topic, prob) in s_doc:
+                    t_prob = 0
+                    # print(f"topic: {topic}, prob: {prob}")
+                    for (t_topic, t_prob) in t_doc:
+                        if t_topic == topic:
+                            t_prob = t_prob
+                            break
+                    prob = round(prob, 2)
+                    t_prob = round(t_prob, 2)
+                    kl_divergence += prob * np.log(prob / t_prob)
+            # print(f"kl_divergence: {kl_divergence}")
+            sim_interest = 1 / (1 + kl_divergence)
+    except:
         sim_interest = 0
-    else:
-        s_dictionary = corpora.Dictionary(s_tokenized)
-        t_dictionary = corpora.Dictionary(t_tokenized)
-        s_corpus = [s_dictionary.doc2bow(text) for text in s_tokenized]
-        t_corpus = [t_dictionary.doc2bow(text) for text in t_tokenized]
-        s_lda = gensim.models.LdaModel(s_corpus, num_topics=10, id2word=s_dictionary, passes=15, random_state=42)
-        t_lda = gensim.models.LdaModel(t_corpus, num_topics=10, id2word=t_dictionary, passes=15, random_state=42)
-        # pprint(s_lda.print_topics())
-        # pprint(t_lda.print_topics())
-        s_dist = s_lda.get_document_topics(s_corpus)
-        t_dist = t_lda.get_document_topics(t_corpus)
-        kl_divergence = 0
-        for s_doc, t_doc in zip(s_dist, t_dist):
-            for (topic, prob) in s_doc:
-                t_prob = 0
-                # print(f"topic: {topic}, prob: {prob}")
-                for (t_topic, t_prob) in t_doc:
-                    if t_topic == topic:
-                        t_prob = t_prob
-                        break
-                prob = round(prob, 2)
-                t_prob = round(t_prob, 2)
-                kl_divergence += prob * np.log(prob / t_prob)
-        # print(f"kl_divergence: {kl_divergence}")
-        sim_interest = 1 / (1 + kl_divergence)
     # print(f"sim_interest: {sim_interest}")
     ########### PastSpread  ###########
     s_user_all_post_url = ccf.find_posts_with_url(s_all_posts, 'text')
@@ -375,39 +384,55 @@ if __name__ == '__main__':
     cluster_names = [item[0] for item in hash_table]
     # 提取中间一列作为 Python 列表
     # debug = True
-    # for idx in range(len(hash_table)):
-    idx =8
-    output_cluster = []
-    start_time = hash_table[idx][1]
-    end_time = hash_table[idx][2]
-    cluster = cluster_names[idx]
-    # end_time 加一天
-    end_time = (pd.to_datetime(end_time) + pd.DateOffset(days=1)).strftime('%Y-%m-%d')
-    A = 'weibo'
-    B = 'twitter'
-    df_data = df_all_posts[
-        (df_all_posts['publish_time'] >= start_time) & (df_all_posts['publish_time'] <= end_time)]
-    df_data = df_data[df_data['query'] == 'highlight']
-    df_data = df_data[df_data['cluster'] == cluster]
-
-    df_data_A = df_data[df_data['from'] == A]
-    df_data_B = df_data[df_data['from'] == B]
-    print(f"Cluster: {cluster}  df_data shape: {df_data.shape[0]} df_data_A shape: {df_data_A.shape[0]} df_data_B shape: {df_data_B.shape[0]}")
-    debug = False
-    ### 先解决PPT中提到的
-    for idx_a in range(df_data_A.shape[0]):
-        for idx_b in range(df_data_B.shape[0]):
-            print(f"=============================================")
-            factor, s_post, t_post, s_highlight, t_highlight, diffusion_pattern = cal_post_factor(
-                df_data_A.iloc[idx_a], df_data_B.iloc[idx_b], df_data, debug, debug)
-            print(f"{s_post['from']}-->{t_post['from']} ,Factor: {factor} Diffusion Pattern Type: {diffusion_pattern}")
-            print(f"source:{s_post['text']}")
-            print(f"target:{t_post['text']}")
-            # input_str =  input("Enter y is assigned, n is not assigned:\n")
-            # is_assigned = True if input_str == 'y' else False
-            output_cluster.append(format_post(s_post, t_post, s_highlight, t_highlight, factor, diffusion_pattern,False))
-            # print(is_assigned)
-    output[cluster] = output_cluster
-    # 写入文件
-    with open(f'./json/{cluster}.json', 'w',encoding='utf-8') as f:
+    for idx in range(len(hash_table)):
+        if idx == 1 or idx == 2 or idx == 3 or idx == 9 or idx == 10:
+            continue
+        output_cluster = []
+        start_time = hash_table[idx][1]
+        end_time = hash_table[idx][2]
+        cluster = cluster_names[idx]
+        # end_time 加一天
+        end_time = (pd.to_datetime(end_time) + pd.DateOffset(days=1)).strftime('%Y-%m-%d')
+        A = 'weibo'
+        B = 'twitter'
+        df_data = df_all_posts[
+            (df_all_posts['publish_time'] >= start_time) & (df_all_posts['publish_time'] <= end_time)]
+        # 要求query不是highlight
+        df_data = df_data[df_data['query'] != 'highlight']
+        # df_data = df_data[df_data['query'] == 'highlight']
+        df_data = df_data[df_data['cluster'] == cluster]
+        df_data_A = df_data[df_data['from'] == A]
+        df_data_B = df_data[df_data['from'] == B]
+        print(f"Cluster: {cluster}  df_data shape: {df_data.shape[0]} df_data_A shape: {df_data_A.shape[0]} df_data_B shape: {df_data_B.shape[0]}")
+        debug = False
+        post_num = 0
+        ### 先解决PPT中提到的
+        select_data = []
+        idx_rand_a = 0
+        idx_rand_b = 0
+        select_data.append((idx_rand_a, idx_rand_b))
+        for idx_a in range(df_data_A.shape[0]):
+            for idx_b in range(df_data_B.shape[0]):
+                if (idx_rand_a, idx_rand_b) in select_data:
+                    idx_rand_a = np.random.randint(0, df_data_A.shape[0])
+                    idx_rand_b = np.random.randint(0, df_data_B.shape[0])
+                    while (idx_rand_a, idx_rand_b) in select_data:
+                        idx_rand_a = np.random.randint(0, df_data_A.shape[0])
+                        idx_rand_b = np.random.randint(0, df_data_B.shape[0])
+                    select_data.append((idx_rand_a, idx_rand_b))
+                factor, s_post, t_post, s_highlight, t_highlight, diffusion_pattern = cal_post_factor(
+                    df_data_A.iloc[idx_a], df_data_B.iloc[idx_b], df_data, debug, debug)
+                print(f"Cluster: {cluster}({idx_rand_a}{idx_rand_b})-|- {s_post['from']}-->{t_post['from']} ,Factor: {factor} Diffusion Pattern Type: {diffusion_pattern}")
+                # print(f"source:{s_post['text']}")
+                # print(f"target:{t_post['text']}")
+                # input_str =  input("Enter y is assigned, n is not assigned:\n")
+                # is_assigned = True if input_str == 'y' else False
+                output_cluster.append(format_post(s_post, t_post, s_highlight, t_highlight, factor, diffusion_pattern,False))
+                # print(is_assigned)
+                post_num += 1
+                if post_num > 60:
+                    break
+        output[cluster] = output_cluster
+        # 写入文件
+    with open(f'./json/post_other.json', 'w',encoding='utf-8') as f:
         f.write(json.dumps(output, ensure_ascii=False,indent=4))
