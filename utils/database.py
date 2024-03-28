@@ -639,34 +639,34 @@ class DataBase:
         platform_A_posts_ids = flower_posts[platform_A]
         platform_B_posts_ids = flower_posts[platform_B]
         ######### 真实计算数据
-        for A in platform_A_posts_ids:
-            for B in platform_B_posts_ids:
-                post_A = self.all_posts[self.all_posts['post_id'] == A].iloc[0]
-                post_B = self.all_posts[self.all_posts['post_id'] == B].iloc[0]
-                p, s_plat, t_plat, s_highlight, t_highlight, diffusion_pattern = cpf.cal_post_factor(post_A, post_B,
-                                                                                                     df_data, self)
-                output.append({
-                    "source":
-                        {
-                            "id": s_plat['post_id'],
-                            "platform": s_plat['from'],
-                            'highlight': s_highlight
-                        }
-                    ,
-                    "target": {
-                        "id": t_plat['post_id'],
-                        "platform": t_plat['from'],
-                        'highlight': t_highlight
-                    },
-                    "width": p,
-                    "diffusion_pattern": diffusion_pattern
-                })
+        # for A in platform_A_posts_ids:
+        #     for B in platform_B_posts_ids:
+        #         post_A = self.all_posts[self.all_posts['post_id'] == A].iloc[0]
+        #         post_B = self.all_posts[self.all_posts['post_id'] == B].iloc[0]
+        #         p, s_plat, t_plat, s_highlight, t_highlight, diffusion_pattern = cpf.cal_post_factor(post_A, post_B,
+        #                                                                                              df_data, self)
+        #         output.append({
+        #             "source":
+        #                 {
+        #                     "id": s_plat['post_id'],
+        #                     "platform": s_plat['from'],
+        #                     'highlight': s_highlight
+        #                 }
+        #             ,
+        #             "target": {
+        #                 "id": t_plat['post_id'],
+        #                 "platform": t_plat['from'],
+        #                 'highlight': t_highlight
+        #             },
+        #             "width": p,
+        #             "diffusion_pattern": diffusion_pattern
+        #         })
         ###############case1数据
-        # print(cluster)
-        # print(self.case_posts)
-        # # 把str转换为json
-        # json_data = json.loads(self.case_posts)
-        # output = json_data[cluster]
+        print(cluster)
+        print(self.case_posts)
+        # 把str转换为json
+        json_data = json.loads(self.case_posts)
+        output = json_data[cluster]
         return output
 
     def get_history_relevance(self, platform_list, event, date, cycle, soure, target):

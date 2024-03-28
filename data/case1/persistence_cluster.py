@@ -108,7 +108,6 @@ def cal_hashtag_score(A_posts, B_posts):
     A_hashtags = find_hashtags(A_posts).tolist()
     B_hashtags = find_hashtags(B_posts).tolist()
     # 处理nan
-
     A_hashtags_list = [item for sublist in A_hashtags for item in sublist]
     B_hashtags_list = [item for sublist in B_hashtags for item in sublist]
     # print(f"A_hashtags: {A_hashtags_list}")

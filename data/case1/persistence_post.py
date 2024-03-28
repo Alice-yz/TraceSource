@@ -14,30 +14,39 @@ from langdetect import detect
 import nltk
 from nltk.corpus import stopwords
 import json
+
 # 下载停用词
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
 
 model_eng = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 model_mut = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
-def calculate_bert_similarity(text1, text2,model):
+
+
+def calculate_bert_similarity(text1, text2, model):
     embeddings = model.encode([text1, text2])
     sim = util.cos_sim(embeddings[0], embeddings[1])
     return sim.tolist()[0][0]
+
+
 def calculate_cosine_similarity(text1, text2):
     vectorizer = CountVectorizer()
     corpus = [text1, text2]
     vectors = vectorizer.fit_transform(corpus)
     similarity_matrix = cosine_similarity(vectors)
     return similarity_matrix[0][1]
+
+
 def find_url_from_text(text):
     return re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text)
+
 
 def check_special_info(text):
     # 返回分数以及包含的特定的词
     special_info = ["source", "cr.", "original post", "source:", "via", "via:", "original link", "credit:", "from",
-                    "from:","original link","courtesy of","reprinted from","quote form","cited from","hat tip","originally published by"]
-    special_mention = ["twitter","bluebird","facebook","weibo","chinese twitter","Chinese Twitter","weibo.com"]
+                    "from:", "original link", "courtesy of", "reprinted from", "quote form", "cited from", "hat tip",
+                    "originally published by"]
+    special_mention = ["twitter", "bluebird", "facebook", "weibo", "chinese twitter", "Chinese Twitter", "weibo.com"]
     special_words = []
     score = 0
     for info in special_info:
@@ -48,10 +57,12 @@ def check_special_info(text):
         if mention in text:
             score = 1
             special_words.append(mention)
-    return score,special_words
+    return score, special_words
+
 
 def find_hashtags(text):
     return re.findall(r'#\w+#|\B#\w+\b', text)
+
 
 def get_user_info(all_users, user_id):
     user_info = all_users[all_users['user_id'] == user_id]
@@ -63,7 +74,7 @@ def get_user_info(all_users, user_id):
     return user_info
 
 
-def cal_post_factor(post_A,post_B,df_data,self,debug=False):
+def cal_post_factor(post_A, post_B, df_data, self, debug=False):
     # 首先判断谁传给谁
     if post_A['publish_time'] > post_B['publish_time']:
         s_post = post_B
@@ -145,7 +156,7 @@ def cal_post_factor(post_A,post_B,df_data,self,debug=False):
     inf = np.log(1 + engagement_s) / np.log(1 + max_engagement_s) * (1 - penalty * is_post)
     # print(f"inf: {inf}")
     # 检查t平台的特征关键词
-    special_score,special_words = check_special_info(t_post['text_trans'])
+    special_score, special_words = check_special_info(t_post['text_trans'])
     for word in special_words:
         s_special_begin_idx = s_post['text_trans'].find(word)
         t_special_begin_idx = t_post['text_trans'].find(word)
@@ -161,8 +172,8 @@ def cal_post_factor(post_A,post_B,df_data,self,debug=False):
         })
     # print(f"special_score: {special_score}")
     ########### Sim User info ###########
-    s_user = get_user_info(df_all_accounts,s_post['user_id'])
-    t_user = get_user_info(df_all_accounts,t_post['user_id'])
+    s_user = get_user_info(df_all_accounts, s_post['user_id'])
+    t_user = get_user_info(df_all_accounts, t_post['user_id'])
     # 不跨语言用jarosim
     jaro_sim = Levenshtein.jaro(s_user['name'], t_user['name'])
     # 跨语言用bert
@@ -188,12 +199,12 @@ def cal_post_factor(post_A,post_B,df_data,self,debug=False):
     sim_description = calculate_bert_similarity(s_description, t_description, model_mut)
     # print(f"sim_description: {sim_description}")
     sim_userinfo = 0.5 * username_sim + 0.5 * sim_description
-    if t_user['type'] ==None:
+    if t_user['type'] == None:
         t_SNS = -1
     else:
         t_SNS = 1
-    word_list_1 = ['america', 'USA','U.S.', 'twitter', 'facebook']
-    word_list_2 = ['china','chinese', 'weibo']
+    word_list_1 = ['america', 'USA', 'U.S.', 'twitter', 'facebook']
+    word_list_2 = ['china', 'chinese', 'weibo']
     flag = False
     if t_post['from'] == 'weibo':
         for word in word_list_1:
@@ -215,7 +226,7 @@ def cal_post_factor(post_A,post_B,df_data,self,debug=False):
     # 寻找单个账号粉丝量最大的
     max_fans = 0
     for idx, row in s_platform_posts.iterrows():
-        user = get_user_info(df_all_accounts,row['user_id'])
+        user = get_user_info(df_all_accounts, row['user_id'])
         fan_count = int(user['fan'])
         if fan_count > max_fans:
             max_fans = int(user['fan'])
@@ -318,75 +329,86 @@ def cal_post_factor(post_A,post_B,df_data,self,debug=False):
         print(f"num_path: {num_path}")
         print(f"post_rel: {post_rel}, usr_rel: {usr_rel}, his_rel: {his_rel}")
         print(f"factor: {factor}")
-    return factor,s_post,t_post,s_highlight,t_highlight,diffusion_pattern_type
+    return factor, s_post, t_post, s_highlight, t_highlight, diffusion_pattern_type
+
+
+def format_post(s_post, t_post, s_highlight, t_highlight, factor, diffusion_pattern):
+    return {
+        "source":
+            {
+                "id": s_post["post_id"],
+                "platform": s_post["from"],
+                'highlight': s_highlight
+            }
+        ,
+        "target": {
+            "id": t_post["post_id"],
+            "platform": t_post["from"],
+            "highlight": t_highlight
+        },
+        "width": factor,
+        "diffusion_pattern": diffusion_pattern
+    }
 
 
 if __name__ == '__main__':
-    df_all_posts = pd.read_csv('all_posts.csv',dtype={'user_id': str, 'post_id': str})
+    df_all_posts = pd.read_csv('all_posts.csv', dtype={'user_id': str, 'post_id': str})
     df_all_posts.where(df_all_posts.notnull(), None)
-    df_all_accounts = pd.read_csv('all_accounts.csv',dtype={'user_id': str})
+    df_all_accounts = pd.read_csv('all_accounts.csv', dtype={'user_id': str})
     df_all_accounts.where(df_all_accounts.notnull(), None)
     output = {}
     hash_table = [
-    ('Great_Wave_Kanagawa', "2021-04-20", "2021-04-29"),
-    ('foreign_affairs_questions', '2021-04-20','2021-04-29'),
-    ('japan_nuclear_wastewater','2021-04-20','2021-04-29'),
-    ('radioactive_condemn_water', '2021-04-20','2021-04-29'),
-    ('240_china_nuclear_pollution','2023-08-21','2023-08-30'),
-    ('70_billion_japan_water', '2023-08-21','2023-08-30'),
-    ('cooling_water_nuclear_wastewater', '2023-08-21','2023-08-30'),
-    ('south_korea_nuclear_discharge', '2023-08-21','2023-09-02'),
-    ('sue_TEPCO_japan', '2023-08-21','2023-08-30'),
-    ('radioactive_pollution_japan_sea', '2023-08-21','2023-08-30'),
-    ('treatment_japan_waste_nuclear', '2023-08-21','2023-08-30')
+        ('Great_Wave_Kanagawa', "2021-04-20", "2021-04-29"),
+        ('foreign_affairs_questions', '2021-04-20', '2021-04-29'),
+        ('japan_nuclear_wastewater', '2021-04-20', '2021-04-29'),
+        ('radioactive_condemn_water', '2021-04-20', '2021-04-29'),
+        ('240_china_nuclear_pollution', '2023-08-21', '2023-08-30'),
+        ('70_billion_japan_water', '2023-08-21', '2023-08-30'),
+        ('cooling_water_nuclear_wastewater', '2023-08-21', '2023-08-30'),
+        ('south_korea_nuclear_discharge', '2023-08-21', '2023-09-02'),
+        ('sue_TEPCO_japan', '2023-08-21', '2023-08-30'),
+        ('radioactive_pollution_japan_sea', '2023-08-21', '2023-08-30'),
+        ('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30')
     ]
     cluster_names = [item[0] for item in hash_table]
     # 提取中间一列作为 Python 列表
-    debug = True
+    # debug = True
     for idx in range(len(hash_table)):
-        output_cluster = []
+        output_cluster = {}
         start_time = hash_table[idx][1]
         end_time = hash_table[idx][2]
         cluster = cluster_names[idx]
         A = 'weibo'
         B = 'twitter'
-        df_data = df_all_posts[(df_all_posts['publish_time'] >= start_time) & (df_all_posts['publish_time'] <= end_time)]
+        df_data = df_all_posts[
+            (df_all_posts['publish_time'] >= start_time) & (df_all_posts['publish_time'] <= end_time)]
         df_data = df_data[df_data['query'] == 'highlight']
         df_data = df_data[df_data['cluster'] == cluster]
         print(f"Cluster: {cluster}  df_data shape: {df_data.shape[0]}")
         df_data_A = df_data[df_data['from'] == A]
         df_data_B = df_data[df_data['from'] == B]
+        debug = False
         for idx_a in range(df_data_A.shape[0]):
             for idx_b in range(df_data_B.shape[0]):
                 print(f"=============================================")
-                factor,s_post,t_post,s_highlight,t_highlight,diffusion_pattern = cal_post_factor(df_data_A.iloc[idx_a],df_data_B.iloc[idx_b],df_data,debug,debug)
-                print(f"{s_post['from']}-->{t_post['from']} ,Factor: {factor} Diffusion Pattern Type: {diffusion_pattern}")
+                factor, s_post, t_post, s_highlight, t_highlight, diffusion_pattern = cal_post_factor(
+                    df_data_A.iloc[idx_a], df_data_B.iloc[idx_b], df_data, debug, debug)
+                print(
+                    f"{s_post['from']}-->{t_post['from']} ,Factor: {factor} Diffusion Pattern Type: {diffusion_pattern}")
                 print(f"source:{s_post['text']}")
                 print(f"target:{t_post['text']}")
-                output_cluster.append({
-                    "source":
-                        {
-                            "id": s_post["post_id"],
-                            "platform": s_post["from"],
-                            'highlight': s_highlight
-                        }
-                    ,
-                    "target": {
-                        "id": t_post["post_id"],
-                        "platform": t_post["from"],
-                        "highlight": t_highlight
-                    },
-                    "width": factor,
-                    "diffusion_pattern": diffusion_pattern
-                })
+                if s_post['post_id'] in output_cluster:
+                    output_cluster[s_post['post_id']].append(format_post(s_post, t_post, s_highlight, t_highlight, factor,diffusion_pattern))
+                else:
+                    output_cluster[s_post['post_id']] = [format_post(s_post, t_post, s_highlight, t_highlight, factor,diffusion_pattern)]
+                if t_post['post_id'] in output_cluster:
+                    output_cluster[t_post['post_id']].append(format_post(s_post, t_post, s_highlight, t_highlight, factor,diffusion_pattern))
+                else:
+                    output_cluster[t_post['post_id']] = [format_post(s_post, t_post, s_highlight, t_highlight, factor,diffusion_pattern)]
         output[cluster] = output_cluster
     # 把结果写入文件
     # 把output转为json格式
     output = json.dumps(output)
     # 写入文件
-    with open('case1_post.json', 'w') as f:
-        json.dump(output, f)
-
-
-
-
+    # with open('case1_post.json', 'w') as f:
+    #     json.dump(output, f)
