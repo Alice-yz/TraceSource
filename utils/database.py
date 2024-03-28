@@ -339,7 +339,7 @@ class DataBase:
                     posts = cluster_posts[cluster_posts['publish_time_by_day'] == date]
                     # posts去重
                     ###### 重复的帖子只保留一条
-                    posts = posts.drop_duplicates(subset='user_id')
+                    posts = posts.drop_duplicates(subset='post_id')
                     inf_posts, noinf_posts = KOL_inf(posts)
                     c_p_data['petals'].append({
                         'day': date.strftime('%Y-%m-%d'),
