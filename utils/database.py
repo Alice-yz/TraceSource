@@ -677,7 +677,7 @@ class DataBase:
             if item['is_assigned'] == 'true':
                 output.append(item)
                 continue
-            if item['width'] > 0.6:
+            if item['width'] > 0.8:
                 output.append(item)
                 continue
         json_data = self.case_posts_other
@@ -696,7 +696,7 @@ class DataBase:
         # 应该传出的数据长度
         output_len = int(bg_length * ratio) - len(output)
         for item in output_all_other:
-            if item['width'] > 0.6:
+            if item['width'] > 0.8:
                 output.append(item)
                 if len(output) > output_len:
                     break
