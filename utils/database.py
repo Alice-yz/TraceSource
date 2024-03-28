@@ -419,16 +419,30 @@ class DataBase:
         # 按照时间排序
         platform_data_by_day = platform_data_by_day.sort_values(by='publish_time_by_day', ascending=False)
         output = []
+
+        # high light post
+        highlight_post_num = 0
+
         for index, row in platform_data_by_day.iterrows():
             date = row['publish_time_by_day']
             count = row['counts']
             posts = platform_data[platform_data['publish_time_by_day'] == date]
+            #
             # print(f"data: {date}, {count}")
             # 获取posts中转、赞、评的最大的帖子
             posts['hot'] = posts['cnt_retweet'] + posts['cnt_agree'] + posts['cnt_comment']
             hot_post = posts[posts['hot'] == posts['hot'].max()]
             hot_post = hot_post.iloc[0]
             hot_user = self.get_user_info(hot_post['user_id'])
+
+            if highlight_post_num < 2:
+                # 获取这些帖子的query中是否包含"highlight"，返回这些帖子
+                highlight_posts = posts[posts['query'].str.contains('highlight')]
+                if highlight_posts.shape[0] > 0:
+                    highlight_post = highlight_posts.iloc[0]
+                    hot_post = highlight_post
+                    hot_user = self.get_user_info(hot_post['user_id'])
+                    highlight_post_num += 1
             output.append({
                 'avatar': hot_user['avatar'],
                 'name': hot_user['screen_name_trans'],
