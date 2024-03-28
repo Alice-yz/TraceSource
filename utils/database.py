@@ -662,11 +662,17 @@ class DataBase:
         #             "diffusion_pattern": diffusion_pattern
         #         })
         ###############case1数据
-        print(cluster)
         print(self.case_posts)
         # 把str转换为json
-        json_data = json.loads(self.case_posts)
-        output = json_data[cluster]
+        json_data = self.case_posts
+        output_all = json_data[cluster]
+        for item in output_all:
+            if item['is_assigned'] == 'true':
+                output.append(item)
+                continue
+            if item['width'] > 0.5:
+                output.append(item)
+                continue
         return output
 
     def get_history_relevance(self, platform_list, event, date, cycle, soure, target):
