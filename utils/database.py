@@ -745,10 +745,9 @@ class DataBase:
             t_history_post.update(t_post)
 
         s_his_rel_tag,t_his_rel_tag = ccf.cal_history_hashtag(s_history_post, t_history_post)
-
-
         for index, row in s_history_post.iterrows():
-            if row['highlight'] is None:
+            # 判断row中是否有highlight
+            if 'highlight' not in row:
                 s_highlight = []
             else:
                 s_highlight = row['highlight']
@@ -780,7 +779,7 @@ class DataBase:
         candidate_output['name'] = 'Candidate User'
         candidate_output[t_plat] = []
         for index, row in t_history_post.iterrows():
-            if row['highlight'] is None:
+            if 'highlight' not in row:
                 t_highlight = []
             else:
                 t_highlight = row['highlight']
