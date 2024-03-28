@@ -675,9 +675,25 @@ class DataBase:
         output_all = json_data[cluster]
         for item in output_all:
             if item['is_assigned']:
+                s_post_id = item['source']['id']
+                t_post_id = item['target']['id']
+                s_post = self.all_posts[self.all_posts['post_id'] == s_post_id].iloc[0]
+                t_post = self.all_posts[self.all_posts['post_id'] == t_post_id].iloc[0]
+                s_post_trans = s_post['text_trans']
+                t_post_trans = t_post['text_trans']
+                item['source']['text_trans'] = s_post_trans
+                item['target']['text_trans'] = t_post_trans
                 output.append(item)
                 continue
             if item['width'] > 0.6:
+                s_post_id = item['source']['id']
+                t_post_id = item['target']['id']
+                s_post = self.all_posts[self.all_posts['post_id'] == s_post_id].iloc[0]
+                t_post = self.all_posts[self.all_posts['post_id'] == t_post_id].iloc[0]
+                s_post_trans = s_post['text_trans']
+                t_post_trans = t_post['text_trans']
+                item['source']['text_trans'] = s_post_trans
+                item['target']['text_trans'] = t_post_trans
                 output.append(item)
                 continue
         json_data = self.case_posts_other
@@ -698,6 +714,14 @@ class DataBase:
             if len(output) > output_len:
                 break
             if item['width'] > 0.6:
+                s_post_id = item['source']['id']
+                t_post_id = item['target']['id']
+                s_post = self.all_posts[self.all_posts['post_id'] == s_post_id].iloc[0]
+                t_post = self.all_posts[self.all_posts['post_id'] == t_post_id].iloc[0]
+                s_post_trans = s_post['text_trans']
+                t_post_trans = t_post['text_trans']
+                item['source']['text_trans'] = s_post_trans
+                item['target']['text_trans'] = t_post_trans
                 output.append(item)
                 continue
         return output
