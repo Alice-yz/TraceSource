@@ -26,5 +26,4 @@ app.add_middleware(
 if __name__ == "__main__":
     uvicorn.run('main:app',
                 port=8000,
-                reload=True,
-                reload_delay=0.1)
+                reload=False)
