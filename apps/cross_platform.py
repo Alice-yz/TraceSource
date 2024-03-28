@@ -163,6 +163,6 @@ async def get_history_relevance_post(request: DetailViewRequest):
     cycle = request.cycle
     source = request.source
     target = request.target
-    source_keys = list(source.values())[0]
-    target_keys = list(target.values())[0]
-    return db.get_interest_distribution(names, event, date, cycle, source_keys, target_keys)
+    # source_keys = list(source.values())[0]
+    # target_keys = list(target.values())[0]
+    return db.get_interest_distribution(names, event, date, cycle, source,  target)

@@ -862,10 +862,14 @@ class DataBase:
         output.append(candidate_output)
         return output
 
-    def get_interest_distribution(self, platform_list, event, date, cycle, s_id, t_id):
+    def get_interest_distribution(self, platform_list, event, date, cycle, source, target):
         output = {}
-        output[platform_list[0]] = []
-        output[platform_list[1]] = []
+        s_id = list(source.values())[0]
+        t_id = list(target.values())[0]
+        s_platform = list(source.keys())[0]
+        t_platform = list(target.keys())[0]
+        output[s_platform] = []
+        output[t_platform] = []
         s_user_id = self.all_posts[self.all_posts['post_id'] == s_id].iloc[0]['user_id']
         t_user_id = self.all_posts[self.all_posts['post_id'] == t_id].iloc[0]['user_id']
         s_user = self.get_user_info(s_user_id)
@@ -875,14 +879,14 @@ class DataBase:
         start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
         start_time = start_time.strftime('%Y-%m-%d')
         df_data = df_data[(df_data['publish_time'] <= end_time)]
-        s_df_data = df_data[df_data['from'] == platform_list[0]]
-        t_df_data = df_data[df_data['from'] == platform_list[1]]
+        s_df_data = df_data[df_data['from'] == s_platform]
+        t_df_data = df_data[df_data['from'] == t_platform]
         s_all_posts = s_df_data[s_df_data['user_id'] == s_user['user_id']]
         t_all_posts = t_df_data[t_df_data['user_id'] == t_user['user_id']]
         print(s_all_posts.shape[0])
         print(t_all_posts.shape[0])
-        output[platform_list[0]] = lda.get_lda_message(s_all_posts)
-        output[platform_list[1]] = lda.get_lda_message(t_all_posts)
+        output[s_platform] = lda.get_lda_message(s_all_posts)
+        output[t_platform] = lda.get_lda_message(t_all_posts)
         return output
 
 
