@@ -1,0 +1,476 @@
+{
+    "cooling_water_nuclear_wastewater": [
+        {
+            "source": {
+                "id": "4938516205405570",
+                "platform": "weibo",
+                "highlight": [],
+                "text": "去推特转了一圈，看到日本人几乎是全员支持核污水排海的。 还有很多声音故意混淆中国沿海核电站排放的核废水与福岛核电站核污水的区别，污蔑中国也在污染海洋，并且中国全线抵制日本海产之后第一个想到的是今后自己可以吃到便宜的海产品了和嚷嚷着要对等抵制中国游客以及所有中国产品。 偶尔有个把个出 "
+            },
+            "target": {
+                "id": "1695822332114407680",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "Tritium is a red herring. The real danger lies with Strontium-90, carbon-14, iodine-129 and other isotopes."
+            },
+            "width": 0.3971592367633985,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "4938516205405570",
+                "platform": "weibo",
+                "highlight": [],
+                "text": "去推特转了一圈，看到日本人几乎是全员支持核污水排海的。 还有很多声音故意混淆中国沿海核电站排放的核废水与福岛核电站核污水的区别，污蔑中国也在污染海洋，并且中国全线抵制日本海产之后第一个想到的是今后自己可以吃到便宜的海产品了和嚷嚷着要对等抵制中国游客以及所有中国产品。 偶尔有个把个出 "
+            },
+            "target": {
+                "id": "1695622360534057216",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "Scientists have pointed out that China’s own nuclear power plants release wastewater with higher levels of tritium than that found in Fukushima’s discharge, and that the levels are all within boundaries not considered to be harmful to human health.\" https://t.co/GvM72W3wQK https://t.co/wVH0l4QdM3"
+            },
+            "width": 0.4326232836445034,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "4938516205405570",
+                "platform": "weibo",
+                "highlight": [
+                    {
+                        "begin": 227,
+                        "end": 231
+                    }
+                ],
+                "text": "去推特转了一圈，看到日本人几乎是全员支持核污水排海的。 还有很多声音故意混淆中国沿海核电站排放的核废水与福岛核电站核污水的区别，污蔑中国也在污染海洋，并且中国全线抵制日本海产之后第一个想到的是今后自己可以吃到便宜的海产品了和嚷嚷着要对等抵制中国游客以及所有中国产品。 偶尔有个把个出 "
+            },
+            "target": {
+                "id": "1694917686445375488",
+                "platform": "twitter",
+                "highlight": [
+                    {
+                        "begin": 35,
+                        "end": 39
+                    }
+                ],
+                "text": "Fukushima waste water is different from others, it has come in direct contact with the reactor core. Radioactive residues much more toxic than tritium are present.The ALPS system used for filtration never received performance verification from IAEA.https://t.co/w0hMTIa2gK https://t.co/wW9SD4bbyL"
+            },
+            "width": 0.6395028456281153,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "1693903891216429312",
+                "platform": "twitter",
+                "highlight": [
+                    {
+                        "begin": -1,
+                        "end": 3
+                    }
+                ],
+                "text": "福岛的核污水，和一般的冷却水，有什么区别？ https://t.co/DB2vN1TYk4"
+            },
+            "target": {
+                "id": "4938516205405570",
+                "platform": "weibo",
+                "highlight": [
+                    {
+                        "begin": 227,
+                        "end": 231
+                    }
+                ],
+                "text": "去推特转了一圈，看到日本人几乎是全员支持核污水排海的。 还有很多声音故意混淆中国沿海核电站排放的核废水与福岛核电站核污水的区别，污蔑中国也在污染海洋，并且中国全线抵制日本海产之后第一个想到的是今后自己可以吃到便宜的海产品了和嚷嚷着要对等抵制中国游客以及所有中国产品。 偶尔有个把个出 "
+            },
+            "width": 0.7686857036389994,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "1695822332114407680",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "Tritium is a red herring. The real danger lies with Strontium-90, carbon-14, iodine-129 and other isotopes."
+            },
+            "target": {
+                "id": "4939816422607596",
+                "platform": "weibo",
+                "highlight": [],
+                "text": "讲俩词，#考研英语# 可能要考。 nuclear waste water 核废水（没有被直接污染的冷却水）这个词被外媒滥用了。然而，日本排放的是： nuclear contaminated water 核污水（直接接触核辐射的污染水） 以目前国际技术，还没出现能过滤所有核辐射物质的技术，并且核污水里的核辐射物质并非区区几十种，具有高放射性，含有核污染物的水。 两者概念完全不同，扭曲报道，或者弱化事实的媒体，用心昭然若揭。  补几个核心词，考研同学一起背： dump 排放（贬义） dangerous chemical 危险化学物质 poisonous 有剧毒的 hazardous 极度危险的 radioactive 有放射性的 pollutants 污染物 #芝士热亿点##决战考研#"
+            },
+            "width": 0.6978585116287009,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "1695622360534057216",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "Scientists have pointed out that China’s own nuclear power plants release wastewater with higher levels of tritium than that found in Fukushima’s discharge, and that the levels are all within boundaries not considered to be harmful to human health.\" https://t.co/GvM72W3wQK https://t.co/wVH0l4QdM3"
+            },
+            "target": {
+                "id": "4939816422607596",
+                "platform": "weibo",
+                "highlight": [],
+                "text": "讲俩词，#考研英语# 可能要考。 nuclear waste water 核废水（没有被直接污染的冷却水）这个词被外媒滥用了。然而，日本排放的是： nuclear contaminated water 核污水（直接接触核辐射的污染水） 以目前国际技术，还没出现能过滤所有核辐射物质的技术，并且核污水里的核辐射物质并非区区几十种，具有高放射性，含有核污染物的水。 两者概念完全不同，扭曲报道，或者弱化事实的媒体，用心昭然若揭。  补几个核心词，考研同学一起背： dump 排放（贬义） dangerous chemical 危险化学物质 poisonous 有剧毒的 hazardous 极度危险的 radioactive 有放射性的 pollutants 污染物 #芝士热亿点##决战考研#"
+            },
+            "width": 0.6353035148927992,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "1694917686445375488",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "Fukushima waste water is different from others, it has come in direct contact with the reactor core. Radioactive residues much more toxic than tritium are present.The ALPS system used for filtration never received performance verification from IAEA.https://t.co/w0hMTIa2gK https://t.co/wW9SD4bbyL"
+            },
+            "target": {
+                "id": "4939816422607596",
+                "platform": "weibo",
+                "highlight": [],
+                "text": "讲俩词，#考研英语# 可能要考。 nuclear waste water 核废水（没有被直接污染的冷却水）这个词被外媒滥用了。然而，日本排放的是： nuclear contaminated water 核污水（直接接触核辐射的污染水） 以目前国际技术，还没出现能过滤所有核辐射物质的技术，并且核污水里的核辐射物质并非区区几十种，具有高放射性，含有核污染物的水。 两者概念完全不同，扭曲报道，或者弱化事实的媒体，用心昭然若揭。  补几个核心词，考研同学一起背： dump 排放（贬义） dangerous chemical 危险化学物质 poisonous 有剧毒的 hazardous 极度危险的 radioactive 有放射性的 pollutants 污染物 #芝士热亿点##决战考研#"
+            },
+            "width": 0.513879082571909,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "1693903891216429312",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "福岛的核污水，和一般的冷却水，有什么区别？ https://t.co/DB2vN1TYk4"
+            },
+            "target": {
+                "id": "4939816422607596",
+                "platform": "weibo",
+                "highlight": [],
+                "text": "讲俩词，#考研英语# 可能要考。 nuclear waste water 核废水（没有被直接污染的冷却水）这个词被外媒滥用了。然而，日本排放的是： nuclear contaminated water 核污水（直接接触核辐射的污染水） 以目前国际技术，还没出现能过滤所有核辐射物质的技术，并且核污水里的核辐射物质并非区区几十种，具有高放射性，含有核污染物的水。 两者概念完全不同，扭曲报道，或者弱化事实的媒体，用心昭然若揭。  补几个核心词，考研同学一起背： dump 排放（贬义） dangerous chemical 危险化学物质 poisonous 有剧毒的 hazardous 极度危险的 radioactive 有放射性的 pollutants 污染物 #芝士热亿点##决战考研#"
+            },
+            "width": 0.6042084005512594,
+            "diffusion_pattern": 0,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "4939446729838285",
+                "platform": "weibo",
+                "highlight": [],
+                "text": "第一张和第二张照片显示:核污水和海水己经明显分层了，可以想像以下海里的生物，它们受到的核辐射是多么严重。第三张图片的上一张是正常核反应堆里的冷却水，它的颜色是蓝色的，而下一张是发生核事故里的核污水，它的颜色是红色的，因为里面的堆芯外壳，在核事故中已经毁坏，所以核物质和冷却水己经融在一起了，可以想像核辐射有多严重。如果继续排放核污水30年，证明日本公然与世界为敌，犯下反人类罪，可以完全送上审判法庭，永久的钉在耻辱柱上。"
+            },
+            "target": {
+                "id": "1695822332114407680",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "Tritium is a red herring. The real danger lies with Strontium-90, carbon-14, iodine-129 and other isotopes."
+            },
+            "width": 0.4815671790525532,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "1695622360534057216",
+                "platform": "twitter",
+                "highlight": [
+                    {
+                        "begin": -1,
+                        "end": 3
+                    }
+                ],
+                "text": "Scientists have pointed out that China’s own nuclear power plants release wastewater with higher levels of tritium than that found in Fukushima’s discharge, and that the levels are all within boundaries not considered to be harmful to human health.\" https://t.co/GvM72W3wQK https://t.co/wVH0l4QdM3"
+            },
+            "target": {
+                "id": "4939446729838285",
+                "platform": "weibo",
+                "highlight": [
+                    {
+                        "begin": 357,
+                        "end": 361
+                    }
+                ],
+                "text": "第一张和第二张照片显示:核污水和海水己经明显分层了，可以想像以下海里的生物，它们受到的核辐射是多么严重。第三张图片的上一张是正常核反应堆里的冷却水，它的颜色是蓝色的，而下一张是发生核事故里的核污水，它的颜色是红色的，因为里面的堆芯外壳，在核事故中已经毁坏，所以核物质和冷却水己经融在一起了，可以想像核辐射有多严重。如果继续排放核污水30年，证明日本公然与世界为敌，犯下反人类罪，可以完全送上审判法庭，永久的钉在耻辱柱上。"
+            },
+            "width": 0.7601221649315654,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "1694917686445375488",
+                "platform": "twitter",
+                "highlight": [
+                    {
+                        "begin": 35,
+                        "end": 39
+                    }
+                ],
+                "text": "Fukushima waste water is different from others, it has come in direct contact with the reactor core. Radioactive residues much more toxic than tritium are present.The ALPS system used for filtration never received performance verification from IAEA.https://t.co/w0hMTIa2gK https://t.co/wW9SD4bbyL"
+            },
+            "target": {
+                "id": "4939446729838285",
+                "platform": "weibo",
+                "highlight": [
+                    {
+                        "begin": 357,
+                        "end": 361
+                    }
+                ],
+                "text": "第一张和第二张照片显示:核污水和海水己经明显分层了，可以想像以下海里的生物，它们受到的核辐射是多么严重。第三张图片的上一张是正常核反应堆里的冷却水，它的颜色是蓝色的，而下一张是发生核事故里的核污水，它的颜色是红色的，因为里面的堆芯外壳，在核事故中已经毁坏，所以核物质和冷却水己经融在一起了，可以想像核辐射有多严重。如果继续排放核污水30年，证明日本公然与世界为敌，犯下反人类罪，可以完全送上审判法庭，永久的钉在耻辱柱上。"
+            },
+            "width": 0.6182639647704437,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "1693903891216429312",
+                "platform": "twitter",
+                "highlight": [
+                    {
+                        "begin": -1,
+                        "end": 3
+                    }
+                ],
+                "text": "福岛的核污水，和一般的冷却水，有什么区别？ https://t.co/DB2vN1TYk4"
+            },
+            "target": {
+                "id": "4939446729838285",
+                "platform": "weibo",
+                "highlight": [
+                    {
+                        "begin": 357,
+                        "end": 361
+                    }
+                ],
+                "text": "第一张和第二张照片显示:核污水和海水己经明显分层了，可以想像以下海里的生物，它们受到的核辐射是多么严重。第三张图片的上一张是正常核反应堆里的冷却水，它的颜色是蓝色的，而下一张是发生核事故里的核污水，它的颜色是红色的，因为里面的堆芯外壳，在核事故中已经毁坏，所以核物质和冷却水己经融在一起了，可以想像核辐射有多严重。如果继续排放核污水30年，证明日本公然与世界为敌，犯下反人类罪，可以完全送上审判法庭，永久的钉在耻辱柱上。"
+            },
+            "width": 0.6742472166994828,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "4937817787209810",
+                "platform": "weibo",
+                "highlight": [],
+                "text": "核污染水和冷却水的区别，一目了然！日本就是装傻充愣，自己犯的错让全世界来买单。  #研究称日本核污水排海240天到达中国##日本核污染水排海至少要持续30年##日本为了自己划算不惜让全世界买单# "
+            },
+            "target": {
+                "id": "1695822332114407680",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "Tritium is a red herring. The real danger lies with Strontium-90, carbon-14, iodine-129 and other isotopes."
+            },
+            "width": 0.3386364232975001,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "4937817787209810",
+                "platform": "weibo",
+                "highlight": [],
+                "text": "核污染水和冷却水的区别，一目了然！日本就是装傻充愣，自己犯的错让全世界来买单。  #研究称日本核污水排海240天到达中国##日本核污染水排海至少要持续30年##日本为了自己划算不惜让全世界买单# "
+            },
+            "target": {
+                "id": "1695622360534057216",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "Scientists have pointed out that China’s own nuclear power plants release wastewater with higher levels of tritium than that found in Fukushima’s discharge, and that the levels are all within boundaries not considered to be harmful to human health.\" https://t.co/GvM72W3wQK https://t.co/wVH0l4QdM3"
+            },
+            "width": 0.38785143402976785,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "4937817787209810",
+                "platform": "weibo",
+                "highlight": [
+                    {
+                        "begin": -1,
+                        "end": 3
+                    }
+                ],
+                "text": "核污染水和冷却水的区别，一目了然！日本就是装傻充愣，自己犯的错让全世界来买单。  #研究称日本核污水排海240天到达中国##日本核污染水排海至少要持续30年##日本为了自己划算不惜让全世界买单# "
+            },
+            "target": {
+                "id": "1694917686445375488",
+                "platform": "twitter",
+                "highlight": [
+                    {
+                        "begin": 35,
+                        "end": 39
+                    }
+                ],
+                "text": "Fukushima waste water is different from others, it has come in direct contact with the reactor core. Radioactive residues much more toxic than tritium are present.The ALPS system used for filtration never received performance verification from IAEA.https://t.co/w0hMTIa2gK https://t.co/wW9SD4bbyL"
+            },
+            "width": 0.547225812229792,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "1693903891216429312",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "福岛的核污水，和一般的冷却水，有什么区别？ https://t.co/DB2vN1TYk4"
+            },
+            "target": {
+                "id": "4937817787209810",
+                "platform": "weibo",
+                "highlight": [],
+                "text": "核污染水和冷却水的区别，一目了然！日本就是装傻充愣，自己犯的错让全世界来买单。  #研究称日本核污水排海240天到达中国##日本核污染水排海至少要持续30年##日本为了自己划算不惜让全世界买单# "
+            },
+            "width": 0.8631429088790128,
+            "diffusion_pattern": 0,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "1695822332114407680",
+                "platform": "twitter",
+                "highlight": [
+                    {
+                        "begin": -1,
+                        "end": 5
+                    },
+                    {
+                        "begin": -1,
+                        "end": 3
+                    }
+                ],
+                "text": "Tritium is a red herring. The real danger lies with Strontium-90, carbon-14, iodine-129 and other isotopes."
+            },
+            "target": {
+                "id": "4940070635180805",
+                "platform": "weibo",
+                "highlight": [
+                    {
+                        "begin": 2470,
+                        "end": 2476
+                    },
+                    {
+                        "begin": 298,
+                        "end": 302
+                    }
+                ],
+                "text": "【#日本大学讲师借污蔑中国为排海洗白#，新西兰媒体人回击】据环球网，8月24日，日本福岛第一核电站启动核污染水排海，引发包括日本民众在内的多国人士不满，然而也有人在为日政府开脱……  8月26日（北京时间，下同），认证为“日本某大学特聘讲师”、在个人网站自称“专门研究日本政治和社会问题”的学者杰弗里·霍尔在社交平台X（原推特）发文声称，“中国政府出于政治动机，在福岛（核）废水（排放）之际，实施了对日本水产品的禁令，这似乎导致一些消费者恐慌性购买食盐（尽管中国大陆的核电站多年来一直在排放类似的废水）。”文字下方，他还配上一段来源不明的“抢购视频”。  这一推文在发出后引发一些网友争论，有人表示赞同，也有不少人质疑他的说法，并要求其拿出证据。  8月28日，新西兰媒体人安柏然注意到上述帖文并回复：“不对”。否定霍尔的说法的同时，安柏然也附上了一张图片，图片对正常的核电站冷却水与福岛核污染水进行了简单明确的对比说明，即这两者是不同的，福岛核污染水受到了核反应堆中核燃料的污染。  此前，有日媒曾宣称，中国核电站的记录显示，废水中的氚水平也超过了日本将排放的核污染水中氚的最高含量。对此，中国外交部发言人汪文斌8月23日予以回击，强调日方有意把福岛核污染水同正常的核电站废水混为一谈，恰恰表明了日方在这个问题上不科学，有意蒙蔽国际社会。  汪文斌当时表示，日本福岛核污染水是经过核电站熔化堆芯的水，这种污染水同正常的核电站废水的排放完全不是一码事，两者的性质不同、来源不同、处理难度不同。“中方等利益攸关方也多次指出，如果核污染水是安全的，就没有必要排海；如果不安全就更不应该排海，”汪文斌说道。  值得注意的是，28日，霍尔回复安柏然的帖文，阴阳怪气地称“抱歉，中国核电站废水中的放射性污染水平实际上更高”，并称自己引用了“国际上的可靠消息来源”。同日，安柏然对其说法再次进行回复，列出了人们对福岛核污染水安全性担忧的依据。  “重要区别：福岛是一场核灾难，遭受了3次核（堆芯）熔毁。他们排放的水在接触到堆芯后已经被污染和并具有放射性。世界上没有其他核电站这样做，”安柏然表示，并提出日本核污染水受到普遍质疑的另一个原因，“世界各地的核电站在正常运行过程中都会释放氚，法国核电站的氚排放量是中国核电站的10倍。但氚这个论点是故意迷惑你们的。日本绿色和平组织列出了福岛核污染水中的其他（放射性）同位素，包括但不限于导致骨癌的锶-90，它们的危害要大得多。”  对于安柏然这一回复，有网友在下方@霍尔，“对此有什么回应吗？”截至发稿前，尚未看到霍尔回复该网友。  此外，在文章开篇霍尔借污蔑中国为日本核污染水洗白的帖文下，也有网友表示质疑，“如果你觉得日本的水是安全的，为什么你不把它存在后院，或者（排进）你的泳池里（然后）游泳，或者最好是分给你的家人喝。”  还有网友认为，霍尔似乎已沦为日本政府“宣传傀儡”：“杰弗里已经成为日本政府的‘傀儡’，因为他只关注氚。这就是日本政府的目的。真正的问题是被污染的水里还有什么，以及为什么日本需要30多年的时间排放污染水。核废水不是核污染水。”  就在8月28日，中国驻日本大使馆发布消息称，我驻日本大使吴江浩应约会见日本外务事务次官冈野正敬，就福岛核污染水排海问题进一步向日方阐明严正立场，并要求日方认真回答以下三个问题：首先，为什么日方刻意强调氚元素经过了稀释处理，但始终对其它放射性核素闪烁其辞？第二，为什么日方不进行全面系统的海洋环境监测？第三，为什么日方拒绝其他利益攸关方共同参与建立国际监测机制？#日本正采取卑劣手段对中国倒打一耙#"
+            },
+            "width": 0.6934133283470709,
+            "diffusion_pattern": 1,
+            "is_assigned": true
+        },
+        {
+            "source": {
+                "id": "1695622360534057216",
+                "platform": "twitter",
+                "highlight": [
+                    {
+                        "begin": -1,
+                        "end": 5
+                    },
+                    {
+                        "begin": -1,
+                        "end": 3
+                    }
+                ],
+                "text": "Scientists have pointed out that China’s own nuclear power plants release wastewater with higher levels of tritium than that found in Fukushima’s discharge, and that the levels are all within boundaries not considered to be harmful to human health.\" https://t.co/GvM72W3wQK https://t.co/wVH0l4QdM3"
+            },
+            "target": {
+                "id": "4940070635180805",
+                "platform": "weibo",
+                "highlight": [
+                    {
+                        "begin": 2470,
+                        "end": 2476
+                    },
+                    {
+                        "begin": 298,
+                        "end": 302
+                    }
+                ],
+                "text": "【#日本大学讲师借污蔑中国为排海洗白#，新西兰媒体人回击】据环球网，8月24日，日本福岛第一核电站启动核污染水排海，引发包括日本民众在内的多国人士不满，然而也有人在为日政府开脱……  8月26日（北京时间，下同），认证为“日本某大学特聘讲师”、在个人网站自称“专门研究日本政治和社会问题”的学者杰弗里·霍尔在社交平台X（原推特）发文声称，“中国政府出于政治动机，在福岛（核）废水（排放）之际，实施了对日本水产品的禁令，这似乎导致一些消费者恐慌性购买食盐（尽管中国大陆的核电站多年来一直在排放类似的废水）。”文字下方，他还配上一段来源不明的“抢购视频”。  这一推文在发出后引发一些网友争论，有人表示赞同，也有不少人质疑他的说法，并要求其拿出证据。  8月28日，新西兰媒体人安柏然注意到上述帖文并回复：“不对”。否定霍尔的说法的同时，安柏然也附上了一张图片，图片对正常的核电站冷却水与福岛核污染水进行了简单明确的对比说明，即这两者是不同的，福岛核污染水受到了核反应堆中核燃料的污染。  此前，有日媒曾宣称，中国核电站的记录显示，废水中的氚水平也超过了日本将排放的核污染水中氚的最高含量。对此，中国外交部发言人汪文斌8月23日予以回击，强调日方有意把福岛核污染水同正常的核电站废水混为一谈，恰恰表明了日方在这个问题上不科学，有意蒙蔽国际社会。  汪文斌当时表示，日本福岛核污染水是经过核电站熔化堆芯的水，这种污染水同正常的核电站废水的排放完全不是一码事，两者的性质不同、来源不同、处理难度不同。“中方等利益攸关方也多次指出，如果核污染水是安全的，就没有必要排海；如果不安全就更不应该排海，”汪文斌说道。  值得注意的是，28日，霍尔回复安柏然的帖文，阴阳怪气地称“抱歉，中国核电站废水中的放射性污染水平实际上更高”，并称自己引用了“国际上的可靠消息来源”。同日，安柏然对其说法再次进行回复，列出了人们对福岛核污染水安全性担忧的依据。  “重要区别：福岛是一场核灾难，遭受了3次核（堆芯）熔毁。他们排放的水在接触到堆芯后已经被污染和并具有放射性。世界上没有其他核电站这样做，”安柏然表示，并提出日本核污染水受到普遍质疑的另一个原因，“世界各地的核电站在正常运行过程中都会释放氚，法国核电站的氚排放量是中国核电站的10倍。但氚这个论点是故意迷惑你们的。日本绿色和平组织列出了福岛核污染水中的其他（放射性）同位素，包括但不限于导致骨癌的锶-90，它们的危害要大得多。”  对于安柏然这一回复，有网友在下方@霍尔，“对此有什么回应吗？”截至发稿前，尚未看到霍尔回复该网友。  此外，在文章开篇霍尔借污蔑中国为日本核污染水洗白的帖文下，也有网友表示质疑，“如果你觉得日本的水是安全的，为什么你不把它存在后院，或者（排进）你的泳池里（然后）游泳，或者最好是分给你的家人喝。”  还有网友认为，霍尔似乎已沦为日本政府“宣传傀儡”：“杰弗里已经成为日本政府的‘傀儡’，因为他只关注氚。这就是日本政府的目的。真正的问题是被污染的水里还有什么，以及为什么日本需要30多年的时间排放污染水。核废水不是核污染水。”  就在8月28日，中国驻日本大使馆发布消息称，我驻日本大使吴江浩应约会见日本外务事务次官冈野正敬，就福岛核污染水排海问题进一步向日方阐明严正立场，并要求日方认真回答以下三个问题：首先，为什么日方刻意强调氚元素经过了稀释处理，但始终对其它放射性核素闪烁其辞？第二，为什么日方不进行全面系统的海洋环境监测？第三，为什么日方拒绝其他利益攸关方共同参与建立国际监测机制？#日本正采取卑劣手段对中国倒打一耙#"
+            },
+            "width": 0.6300158098553498,
+            "diffusion_pattern": 1,
+            "is_assigned": true
+        },
+        {
+            "source": {
+                "id": "1694917686445375488",
+                "platform": "twitter",
+                "highlight": [
+                    {
+                        "begin": -1,
+                        "end": 5
+                    },
+                    {
+                        "begin": 35,
+                        "end": 39
+                    }
+                ],
+                "text": "Fukushima waste water is different from others, it has come in direct contact with the reactor core. Radioactive residues much more toxic than tritium are present.The ALPS system used for filtration never received performance verification from IAEA.https://t.co/w0hMTIa2gK https://t.co/wW9SD4bbyL"
+            },
+            "target": {
+                "id": "4940070635180805",
+                "platform": "weibo",
+                "highlight": [
+                    {
+                        "begin": 2470,
+                        "end": 2476
+                    },
+                    {
+                        "begin": 298,
+                        "end": 302
+                    }
+                ],
+                "text": "【#日本大学讲师借污蔑中国为排海洗白#，新西兰媒体人回击】据环球网，8月24日，日本福岛第一核电站启动核污染水排海，引发包括日本民众在内的多国人士不满，然而也有人在为日政府开脱……  8月26日（北京时间，下同），认证为“日本某大学特聘讲师”、在个人网站自称“专门研究日本政治和社会问题”的学者杰弗里·霍尔在社交平台X（原推特）发文声称，“中国政府出于政治动机，在福岛（核）废水（排放）之际，实施了对日本水产品的禁令，这似乎导致一些消费者恐慌性购买食盐（尽管中国大陆的核电站多年来一直在排放类似的废水）。”文字下方，他还配上一段来源不明的“抢购视频”。  这一推文在发出后引发一些网友争论，有人表示赞同，也有不少人质疑他的说法，并要求其拿出证据。  8月28日，新西兰媒体人安柏然注意到上述帖文并回复：“不对”。否定霍尔的说法的同时，安柏然也附上了一张图片，图片对正常的核电站冷却水与福岛核污染水进行了简单明确的对比说明，即这两者是不同的，福岛核污染水受到了核反应堆中核燃料的污染。  此前，有日媒曾宣称，中国核电站的记录显示，废水中的氚水平也超过了日本将排放的核污染水中氚的最高含量。对此，中国外交部发言人汪文斌8月23日予以回击，强调日方有意把福岛核污染水同正常的核电站废水混为一谈，恰恰表明了日方在这个问题上不科学，有意蒙蔽国际社会。  汪文斌当时表示，日本福岛核污染水是经过核电站熔化堆芯的水，这种污染水同正常的核电站废水的排放完全不是一码事，两者的性质不同、来源不同、处理难度不同。“中方等利益攸关方也多次指出，如果核污染水是安全的，就没有必要排海；如果不安全就更不应该排海，”汪文斌说道。  值得注意的是，28日，霍尔回复安柏然的帖文，阴阳怪气地称“抱歉，中国核电站废水中的放射性污染水平实际上更高”，并称自己引用了“国际上的可靠消息来源”。同日，安柏然对其说法再次进行回复，列出了人们对福岛核污染水安全性担忧的依据。  “重要区别：福岛是一场核灾难，遭受了3次核（堆芯）熔毁。他们排放的水在接触到堆芯后已经被污染和并具有放射性。世界上没有其他核电站这样做，”安柏然表示，并提出日本核污染水受到普遍质疑的另一个原因，“世界各地的核电站在正常运行过程中都会释放氚，法国核电站的氚排放量是中国核电站的10倍。但氚这个论点是故意迷惑你们的。日本绿色和平组织列出了福岛核污染水中的其他（放射性）同位素，包括但不限于导致骨癌的锶-90，它们的危害要大得多。”  对于安柏然这一回复，有网友在下方@霍尔，“对此有什么回应吗？”截至发稿前，尚未看到霍尔回复该网友。  此外，在文章开篇霍尔借污蔑中国为日本核污染水洗白的帖文下，也有网友表示质疑，“如果你觉得日本的水是安全的，为什么你不把它存在后院，或者（排进）你的泳池里（然后）游泳，或者最好是分给你的家人喝。”  还有网友认为，霍尔似乎已沦为日本政府“宣传傀儡”：“杰弗里已经成为日本政府的‘傀儡’，因为他只关注氚。这就是日本政府的目的。真正的问题是被污染的水里还有什么，以及为什么日本需要30多年的时间排放污染水。核废水不是核污染水。”  就在8月28日，中国驻日本大使馆发布消息称，我驻日本大使吴江浩应约会见日本外务事务次官冈野正敬，就福岛核污染水排海问题进一步向日方阐明严正立场，并要求日方认真回答以下三个问题：首先，为什么日方刻意强调氚元素经过了稀释处理，但始终对其它放射性核素闪烁其辞？第二，为什么日方不进行全面系统的海洋环境监测？第三，为什么日方拒绝其他利益攸关方共同参与建立国际监测机制？#日本正采取卑劣手段对中国倒打一耙#"
+            },
+            "width": 0.5046926554152944,
+            "diffusion_pattern": 1,
+            "is_assigned": false
+        },
+        {
+            "source": {
+                "id": "1693903891216429312",
+                "platform": "twitter",
+                "highlight": [
+                    {
+                        "begin": -1,
+                        "end": 5
+                    },
+                    {
+                        "begin": -1,
+                        "end": 3
+                    }
+                ],
+                "text": "福岛的核污水，和一般的冷却水，有什么区别？ https://t.co/DB2vN1TYk4"
+            },
+            "target": {
+                "id": "4940070635180805",
+                "platform": "weibo",
+                "highlight": [
+                    {
+                        "begin": 2470,
+                        "end": 2476
+                    },
+                    {
+                        "begin": 298,
+                        "end": 302
+                    }
+                ],
+                "text": "【#日本大学讲师借污蔑中国为排海洗白#，新西兰媒体人回击】据环球网，8月24日，日本福岛第一核电站启动核污染水排海，引发包括日本民众在内的多国人士不满，然而也有人在为日政府开脱……  8月26日（北京时间，下同），认证为“日本某大学特聘讲师”、在个人网站自称“专门研究日本政治和社会问题”的学者杰弗里·霍尔在社交平台X（原推特）发文声称，“中国政府出于政治动机，在福岛（核）废水（排放）之际，实施了对日本水产品的禁令，这似乎导致一些消费者恐慌性购买食盐（尽管中国大陆的核电站多年来一直在排放类似的废水）。”文字下方，他还配上一段来源不明的“抢购视频”。  这一推文在发出后引发一些网友争论，有人表示赞同，也有不少人质疑他的说法，并要求其拿出证据。  8月28日，新西兰媒体人安柏然注意到上述帖文并回复：“不对”。否定霍尔的说法的同时，安柏然也附上了一张图片，图片对正常的核电站冷却水与福岛核污染水进行了简单明确的对比说明，即这两者是不同的，福岛核污染水受到了核反应堆中核燃料的污染。  此前，有日媒曾宣称，中国核电站的记录显示，废水中的氚水平也超过了日本将排放的核污染水中氚的最高含量。对此，中国外交部发言人汪文斌8月23日予以回击，强调日方有意把福岛核污染水同正常的核电站废水混为一谈，恰恰表明了日方在这个问题上不科学，有意蒙蔽国际社会。  汪文斌当时表示，日本福岛核污染水是经过核电站熔化堆芯的水，这种污染水同正常的核电站废水的排放完全不是一码事，两者的性质不同、来源不同、处理难度不同。“中方等利益攸关方也多次指出，如果核污染水是安全的，就没有必要排海；如果不安全就更不应该排海，”汪文斌说道。  值得注意的是，28日，霍尔回复安柏然的帖文，阴阳怪气地称“抱歉，中国核电站废水中的放射性污染水平实际上更高”，并称自己引用了“国际上的可靠消息来源”。同日，安柏然对其说法再次进行回复，列出了人们对福岛核污染水安全性担忧的依据。  “重要区别：福岛是一场核灾难，遭受了3次核（堆芯）熔毁。他们排放的水在接触到堆芯后已经被污染和并具有放射性。世界上没有其他核电站这样做，”安柏然表示，并提出日本核污染水受到普遍质疑的另一个原因，“世界各地的核电站在正常运行过程中都会释放氚，法国核电站的氚排放量是中国核电站的10倍。但氚这个论点是故意迷惑你们的。日本绿色和平组织列出了福岛核污染水中的其他（放射性）同位素，包括但不限于导致骨癌的锶-90，它们的危害要大得多。”  对于安柏然这一回复，有网友在下方@霍尔，“对此有什么回应吗？”截至发稿前，尚未看到霍尔回复该网友。  此外，在文章开篇霍尔借污蔑中国为日本核污染水洗白的帖文下，也有网友表示质疑，“如果你觉得日本的水是安全的，为什么你不把它存在后院，或者（排进）你的泳池里（然后）游泳，或者最好是分给你的家人喝。”  还有网友认为，霍尔似乎已沦为日本政府“宣传傀儡”：“杰弗里已经成为日本政府的‘傀儡’，因为他只关注氚。这就是日本政府的目的。真正的问题是被污染的水里还有什么，以及为什么日本需要30多年的时间排放污染水。核废水不是核污染水。”  就在8月28日，中国驻日本大使馆发布消息称，我驻日本大使吴江浩应约会见日本外务事务次官冈野正敬，就福岛核污染水排海问题进一步向日方阐明严正立场，并要求日方认真回答以下三个问题：首先，为什么日方刻意强调氚元素经过了稀释处理，但始终对其它放射性核素闪烁其辞？第二，为什么日方不进行全面系统的海洋环境监测？第三，为什么日方拒绝其他利益攸关方共同参与建立国际监测机制？#日本正采取卑劣手段对中国倒打一耙#"
+            },
+            "width": 0.6301736410714315,
+            "diffusion_pattern": 0,
+            "is_assigned": false
+        }
+    ]
+}

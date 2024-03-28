@@ -367,7 +367,7 @@ if __name__ == '__main__':
         ('240_china_nuclear_pollution', '2023-08-21', '2023-08-30'),
         ('70_billion_japan_water', '2023-08-21', '2023-08-30'),
         ('cooling_water_nuclear_wastewater', '2023-08-21', '2023-08-30'),
-        ('south_korea_nuclear_discharge', '2023-08-21', '2023-09-02'),
+        ('south_korea_nuclear_discharge', '2023-08-21', '2023-09-01'),
         ('sue_TEPCO_japan', '2023-08-21', '2023-08-30'),
         ('radioactive_pollution_japan_sea', '2023-08-21', '2023-08-30'),
         ('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30')
@@ -376,20 +376,23 @@ if __name__ == '__main__':
     # 提取中间一列作为 Python 列表
     # debug = True
     # for idx in range(len(hash_table)):
-    idx =6
+    idx =8
     output_cluster = []
     start_time = hash_table[idx][1]
     end_time = hash_table[idx][2]
     cluster = cluster_names[idx]
+    # end_time 加一天
+    end_time = (pd.to_datetime(end_time) + pd.DateOffset(days=1)).strftime('%Y-%m-%d')
     A = 'weibo'
     B = 'twitter'
     df_data = df_all_posts[
         (df_all_posts['publish_time'] >= start_time) & (df_all_posts['publish_time'] <= end_time)]
     df_data = df_data[df_data['query'] == 'highlight']
     df_data = df_data[df_data['cluster'] == cluster]
-    print(f"Cluster: {cluster}  df_data shape: {df_data.shape[0]}")
+
     df_data_A = df_data[df_data['from'] == A]
     df_data_B = df_data[df_data['from'] == B]
+    print(f"Cluster: {cluster}  df_data shape: {df_data.shape[0]} df_data_A shape: {df_data_A.shape[0]} df_data_B shape: {df_data_B.shape[0]}")
     debug = False
     ### 先解决PPT中提到的
     for idx_a in range(df_data_A.shape[0]):
@@ -406,5 +409,5 @@ if __name__ == '__main__':
             # print(is_assigned)
     output[cluster] = output_cluster
     # 写入文件
-    # with open(f'./json/{cluster}.json', 'w',encoding='utf-8') as f:
-    #     f.write(json.dumps(output, ensure_ascii=False,indent=4))
+    with open(f'./json/{cluster}.json', 'w',encoding='utf-8') as f:
+        f.write(json.dumps(output, ensure_ascii=False,indent=4))
