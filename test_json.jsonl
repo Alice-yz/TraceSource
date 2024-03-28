@@ -99,3 +99,18 @@
     "twitter": "2775998016"
   }
 }
+
+{
+  "names": [
+    "weibo","twitter"
+  ],
+  "event": "water",
+  "date": "2021-04-29",
+  "cycle": 10,
+  "source": {
+    "weibo": "4628020578485315"
+  },
+  "target": {
+    "twitter": "1384482627143430144"
+  }
+}

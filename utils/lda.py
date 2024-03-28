@@ -20,12 +20,16 @@ def get_lda_message(posts):
     all_docs = [re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', doc) for doc in all_docs]
     tokenized = [doc.lower().split() for doc in all_docs]
     tokenized = [[word for word in doc if word not in stop_words] for doc in tokenized]
+    if posts.shape[0] < 10:
+        topic_num = posts.shape[0]
+    else:
+        topic_num = 10
     if len(tokenized) == 0:
         output = []
     else:
         dictionary = corpora.Dictionary(tokenized)
         corpus = [dictionary.doc2bow(text) for text in tokenized]
-        lda = gensim.models.LdaModel(corpus, num_topics=10, id2word=dictionary, passes=15, random_state=42)
+        lda = gensim.models.LdaModel(corpus, num_topics=topic_num, id2word=dictionary, passes=15, random_state=42)
         num_topics = lda.num_topics
         # 获取主题词名称
         topic_names = lda.print_topics(num_topics)
@@ -57,8 +61,11 @@ def get_lda_message(posts):
         max_size = max(topic_size)
         min_size = min(topic_size)
         for i in range(len(topic_size)):
-            size = (topic_size[i] - min_size) / (max_size - min_size) * 100 + 10
-            topic_size[i] = size
+            if max_size == min_size:
+                topic_size[i] = 10
+            else:
+                size = (topic_size[i] - min_size) / (max_size - min_size) * 100 + 10
+                topic_size[i] = size
         for i in range(len(topic_size)):
             output.append({
                 'x': topic_coordinates[i][0],
