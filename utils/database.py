@@ -175,7 +175,7 @@ class DataBase:
             item['y'] = item.pop('counts')
         # 生成构造时间线要求从2021-05-05开始，到2022-01-15，每天随机生成一个(1,10)直接的数量
         start_fake_date = pd.to_datetime('2021-05-05')
-        end_fake_date = pd.to_datetime('2022-01-15')
+        end_fake_date = pd.to_datetime('2023-08-08')
         while start_fake_date <= end_fake_date:
             if start_fake_date.strftime('%Y-%m-%d') not in [item['x'] for item in data_list]:
                 fake_data = {}
@@ -183,6 +183,8 @@ class DataBase:
                 fake_data['y'] = np.random.randint(1, 10)
                 data_list.append(fake_data)
             start_fake_date += pd.Timedelta(days=1)
+        # 对data_list按照x进行排序
+        data_list = sorted(data_list, key=lambda x: x['x'])
         return data_list
 
     def get_topic(self, platform_list, event, date, cycle):
