@@ -177,7 +177,7 @@ class DataBase:
             item['y'] = item.pop('counts')
         # 生成构造时间线要求从2021-05-05开始，到2022-01-15，每天随机生成一个(1,10)直接的数量
         start_fake_date = pd.to_datetime('2021-05-05')
-        end_fake_date = pd.to_datetime('2023-08-08')
+        end_fake_date = pd.to_datetime('2023-12-30')
         while start_fake_date <= end_fake_date:
             if start_fake_date.strftime('%Y-%m-%d') not in [item['x'] for item in data_list]:
                 fake_data = {}
