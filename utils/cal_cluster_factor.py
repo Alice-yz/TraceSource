@@ -66,6 +66,24 @@ def cal_hashtag_score(A_posts, B_posts):
     # print(hashtag_res)
     return hashtag_score, hashtag_res
 
+def cal_history_hashtag(s_history_post, t_history_post):
+    s_history_post_hashtag = find_hashtags(s_history_post, 'text_trans').tolist()
+    t_history_post_hashtag = find_hashtags(t_history_post, 'text_trans').tolist()
+    s_history_post_hashtag = [item for sublist in s_history_post_hashtag for item in sublist]
+    t_history_post_hashtag = [item for sublist in t_history_post_hashtag for item in sublist]
+    embed_s = model.encode(s_history_post_hashtag, convert_to_tensor=True)
+    embed_t = model.encode(t_history_post_hashtag, convert_to_tensor=True)
+    cosine_scores = util.pytorch_cos_sim(embed_s, embed_t)
+    cosine_scores = cosine_scores.cpu().numpy()
+    s_his_rel_tag = []
+    t_his_rel_tag = []
+    # 保留相似度大于0.5的
+    for i in range(len(s_history_post_hashtag)):
+        if cosine_scores[i][np.argmax(cosine_scores[i])] > 0.5:
+            s_his_rel_tag.append(s_history_post_hashtag[i])
+            t_his_rel_tag.append(t_history_post_hashtag[np.argmax(cosine_scores[i])])
+    return s_his_rel_tag, t_his_rel_tag
+
 
 def find_hashtags(df, col='text_trans'):
     return df[col].str.findall(r'#\w+#|\B#\w+\b')

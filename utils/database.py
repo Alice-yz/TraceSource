@@ -690,15 +690,12 @@ class DataBase:
         user_output['name'] = 'Centser User'
         user_output[s_plat] = []
 
-        s_highlight = []
-        t_highlight = []
         # 寻找s_history_post与t_history_post的directURL
-        s_history_post_url = ccf.find_posts_with_url(s_history_post, 'text')
-        t_history_post_url = ccf.find_posts_with_url(t_history_post, 'text')
-        s_history_post_url_list, s_post_id_list = ccf.find_same_url(s_history_post_url, 'text')
-        t_history_post_url_list, t_post_id_list = ccf.find_same_url(t_history_post_url, 'text')
+        s_history_post_url = ccf.find_posts_with_url(s_history_post, 'text_trans')
+        t_history_post_url = ccf.find_posts_with_url(t_history_post, 'text_trans')
+        s_history_post_url_list, s_post_id_list = ccf.find_same_url(s_history_post_url, 'text_trans')
+        t_history_post_url_list, t_post_id_list = ccf.find_same_url(t_history_post_url, 'text_trans')
         same_url = list(set(s_history_post_url_list).intersection(set(t_history_post_url_list)))
-        same_url_count = len(same_url)
         same_url_s_post_id = []
         same_url_t_post_id = []
         for url in same_url:
@@ -725,20 +722,35 @@ class DataBase:
             else:
                 t_begin_index = t_index
                 t_end_index = t_begin_index + len(same_url[i])
-            t_highlight.append({
+            t_post['highlight'] = [{
                 'begin': t_begin_index,
                 'end': t_end_index
-            })
-            s_highlight.append({
+            }]
+            s_post['highlight'] = [{
                 'begin': s_begin_index,
                 'end': s_end_index
-            })
+            }]
+            # 更新
+            s_history_post.update(s_post)
+            t_history_post.update(t_post)
 
-
-
+        s_his_rel_tag,t_his_rel_tag = ccf.cal_history_hashtag(s_history_post, t_history_post)
 
 
         for index, row in s_history_post.iterrows():
+            if row['highlight'] is None:
+                s_highlight = []
+            else:
+                s_highlight = row['highlight']
+            for i in range(len(s_his_rel_tag)):
+                # 查找text_trans中是否包含有tag
+                if s_his_rel_tag[i] in row['text_trans']:
+                    s_begin_index = row['text_trans'].find(s_his_rel_tag[i])
+                    s_end_index = s_begin_index + len(s_his_rel_tag[i])
+                    s_highlight.append({
+                        'begin': s_begin_index,
+                        'end': s_end_index
+                    })
             user_output[s_plat].append({
                 'id': row['post_id'],
                 'platform': row['from'],
@@ -758,6 +770,19 @@ class DataBase:
         candidate_output['name'] = 'Candidate User'
         candidate_output[t_plat] = []
         for index, row in t_history_post.iterrows():
+            if row['highlight'] is None:
+                t_highlight = []
+            else:
+                t_highlight = row['highlight']
+            for i in range(len(t_his_rel_tag)):
+                # 查找text_trans中是否包含有tag
+                if t_his_rel_tag[i] in row['text_trans']:
+                    t_begin_index = row['text_trans'].find(t_his_rel_tag[i])
+                    t_end_index = t_begin_index + len(t_his_rel_tag[i])
+                    t_highlight.append({
+                        'begin': t_begin_index,
+                        'end': t_end_index
+                    })
             candidate_output[t_plat].append({
                 'id': row['post_id'],
                 'platform': row['from'],

@@ -93,8 +93,8 @@ def cal_RW_SCORE(A_posts, B_posts):
         # print(f"{A_word_list[i]} <--> {B_word_list[cosine_scores[i].argmax()]}, score: {cosine_scores[i].max()}")
         rw_res.append({
             'source': A_word_list[i],
-            'target': B_word_list[cosine_scores[i].argmax()],
-            'score': cosine_scores[i].max()
+            'target': B_word_list[np.argmax(cosine_scores[i])],
+            'score': cosine_scores[i][np.argmax(cosine_scores[i])]
         })
     if len(rw_res) == 0:
         rw_score = 0
@@ -125,8 +125,8 @@ def cal_hashtag_score(A_posts, B_posts):
     for i in range(len(A_hashtags_list)):
         hashtag_res.append({
             'source': A_hashtags_list[i],
-            'target': B_hashtags_list[cosine_scores[i].argmax()],
-            'score': cosine_scores[i].max()
+            'target': B_hashtags_list[np.argmax(cosine_scores[i])],
+            'score': cosine_scores[i][np.argmax(cosine_scores[i])]
         })
     if len(hashtag_res) == 0:
         hashtag_score = 0
