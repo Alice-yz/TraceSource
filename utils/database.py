@@ -695,10 +695,10 @@ class DataBase:
         # 应该传出的数据长度
         output_len = int(bg_length * ratio) - len(output)
         for item in output_all_other:
+            if len(output) > output_len:
+                break
             if item['width'] > 0.6:
                 output.append(item)
-                if len(output) > output_len:
-                    break
                 continue
         return output
 
