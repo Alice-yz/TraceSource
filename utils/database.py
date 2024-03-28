@@ -118,14 +118,15 @@ class DataBase:
             5:('240_china_nuclear_pollution', '2023-08-21', '2023-08-30'),
             6:('70_billion_japan_water', '2023-08-21', '2023-08-30'),
             7:('cooling_water_nuclear_wastewater', '2023-08-21', '2023-08-30'),
-            8:('south_korea_nuclear_discharge', '2023-08-21', '2023-09-02'),
+            8:('south_korea_nuclear_discharge', '2023-08-21', '2023-09-01'),
             9:('sue_TEPCO_japan', '2023-08-21', '2023-08-30'),
             10:('radioactive_pollution_japan_sea', '2023-08-21', '2023-08-30'),
-            11:('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30')
+            11:('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30'),
+            12: ('japan_dead_fish', '2023-12-01', '2023-12-10')
         }
         self.event_dict = {
             "election": [],
-            "water": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+            "water": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12]
         }
         self.platforms = ["weibo", "twitter", "facebook"]
         self.case_posts = json.load(open('./data/case1/case1_post.json', 'r', encoding='utf-8'))

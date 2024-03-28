@@ -5,6 +5,7 @@ import re
 import pandas as pd
 import numpy as np
 import warnings
+
 warnings.filterwarnings('ignore')
 # 取消pandas的警告
 pd.options.mode.chained_assignment = None
@@ -16,32 +17,46 @@ model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 # 查找Top 10的关键词，全是英文
 from collections import Counter
 import re
+
+
 def remove_stopwords(text, stopwords):
     words = text.split()  # 将文本分词为单词列表
     clean_words = [word for word in words if word not in stopwords]  # 去除停用词
     clean_text = ' '.join(clean_words)  # 将列表中的单词重新组合成文本
     return clean_text
+
+
 def remove_newlines(text):
     # 将换行符替换为空格
     if type(text) == float:
         return ''
     clean_text = text.replace('\n', ' ')
     return clean_text
+
+
 def remove_urls(text):
     url_pattern = re.compile(r'https?://\S+|www\.\S+')
     # 将匹配到的网址替换为空字符串
     clean_text = url_pattern.sub('', text)
     return clean_text
+
+
 def remove_after_at(text):
     # 匹配@符号后面的单词的正则表达式
     after_at_pattern = re.compile(r'@\w+\s?')
     clean_text = after_at_pattern.sub('', text)
     return clean_text
+
+
 def remove_punctuation(text):
     clean_text = re.sub(r'[^\w\s]', '', text)
     return clean_text
+
+
 def convert_to_lowercase(text):
     return text.lower()
+
+
 english_stopwords = [
     'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself',
     'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
@@ -52,9 +67,11 @@ english_stopwords = [
     'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again',
     'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each',
     'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than',
-    'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now' ,'RT' ,'weibo', 'rt' ,'cctv' ,'time',
-    'daiichi' ,'the' ,'fukushima' ,'[#' ,'#]' ,'5th'
+    'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now', 'RT', 'weibo', 'rt', 'cctv', 'time',
+    'daiichi', 'the', 'fukushima', '[#', '#]', '5th'
 ]
+
+
 def preprocess_text(text, stopwords):
     text = remove_newlines(text)
     text = remove_urls(text)
@@ -63,6 +80,8 @@ def preprocess_text(text, stopwords):
     text = convert_to_lowercase(text)
     text = remove_stopwords(text, stopwords)
     return text
+
+
 def find_top_n_words(text, n):
     words = ' '.join(text).split()  # 将所有文本拼接成一个长字符串后分词
     word_freq = Counter(words)  # 统计词频
@@ -74,8 +93,6 @@ def get_word_freq_list(text):
     text = text.apply(lambda x: preprocess_text(x, english_stopwords))
     top_words = find_top_n_words(text, 10)
     return top_words
-
-
 
 
 def cal_RW_SCORE(A_posts, B_posts):
@@ -141,7 +158,8 @@ def find_hashtags(df, col='text_trans'):
 
 
 def find_posts_with_url(df, col='text'):
-    return df[df[col].str.contains(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',na=False)]
+    return df[df[col].str.contains(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+                                   na=False)]
 
 
 def find_same_url(df, col='text'):
@@ -159,45 +177,54 @@ def find_same_url(df, col='text'):
 def find_posts_mention_other_platform(df, platform, col='text_trans'):
     return df[df[col].str.contains(platform, na=False)]
 
-def direct_refer(df, platform,col='text_trans'):
+
+def direct_refer(df, platform, col='text_trans'):
     posts_num = df.shape[0]
     if posts_num == 0:
         return 0
     if platform == 'weibo':
-        refer_list = ['weibo', 'Weibo','Chinese Twitter']
+        refer_list = ['weibo', 'Weibo', 'Chinese Twitter']
     elif platform == 'twitter':
-        refer_list = ['twitter', 'Twitter','blue bird']
+        refer_list = ['twitter', 'Twitter', 'blue bird']
     else:
         refer_list = ['facebook', 'Facebook']
     df_refer = df[df[col].str.contains('|'.join(refer_list), na=False)]
     refer_num = df_refer.shape[0]
     spread_list = ["source", "cr.", "original post", "source:", "via", "via:", "original link", "credit:", "from",
-                    "from:","original link","courtesy of","reprinted from","quote form","cited from","hat tip","originally published by"]
+                   "from:", "original link", "courtesy of", "reprinted from", "quote form", "cited from", "hat tip",
+                   "originally published by"]
     df_spread = df[df[col].str.contains('|'.join(spread_list), na=False)]
     spread_num = df_spread.shape[0]
     # 加权求和
     refer_score = (0.5 * refer_num + 0.5 * spread_num) / 5
     return refer_score
 
+
 def find_posts_with_engagement(df, threshold, col=["cnt_retweet", "cnt_agree", "cnt_comment"]):
     return df[df[col] > threshold]
 
 
-def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users,debug = False):
+def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users, isFake,debug=False):
     A_posts = df_data[df_data['from'] == A]
     B_posts = df_data[df_data['from'] == B]
     end_time = pd.to_datetime(date).strftime('%Y-%m-%d')
+    # endtime加一天
+    end_time = (pd.to_datetime(end_time) + pd.Timedelta(days=1)).strftime('%Y-%m-%d')
     start_time = pd.to_datetime(date) - pd.Timedelta(days=cycle)
     start_time = start_time.strftime('%Y-%m-%d')
-    start_time_half = pd.to_datetime(date) - pd.Timedelta(days=cycle / 2)
-    start_time_half = start_time_half.strftime('%Y-%m-%d')
+    if not isFake:
+        start_time_half = pd.to_datetime(date) - pd.Timedelta(days=cycle / 2)
+        start_time_half = start_time_half.strftime('%Y-%m-%d')
+    else:
+        start_time_half = start_time
     B_posts = B_posts[(B_posts['publish_time'] >= start_time_half) & (B_posts['publish_time'] <= end_time)]
     # print(f"A: {A_posts.shape[0]} ,B: {B_posts.shape[0]}")
     ##############计算sal_factor######################
     all_A_posts = all_posts[all_posts['from'] == A]
     all_A_posts = all_A_posts[(all_A_posts['publish_time'] >= start_time) & (all_A_posts['publish_time'] <= end_time)]
     all_B_posts = all_posts[all_posts['from'] == B]
-    all_B_posts = all_B_posts[(all_B_posts['publish_time'] >= start_time_half) & (all_B_posts['publish_time'] <= end_time)]
+    all_B_posts = all_B_posts[
+        (all_B_posts['publish_time'] >= start_time_half) & (all_B_posts['publish_time'] <= end_time)]
     # print(f"all_A: {all_A_posts.shape[0]} ,all_B: {all_B_posts.shape[0]}")
     # 计算salience factor
     if all_A_posts.shape[0] == 0 or all_B_posts.shape[0] == 0:
@@ -222,8 +249,8 @@ def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users,debug = 
     ##############计算A B的SameURL #######################
     A_posts_url = find_posts_with_url(A_posts)
     B_posts_url = find_posts_with_url(B_posts)
-    A_posts_url_list,_ = find_same_url(A_posts_url)
-    B_posts_url_list,_ = find_same_url(B_posts_url)
+    A_posts_url_list, _ = find_same_url(A_posts_url)
+    B_posts_url_list, _ = find_same_url(B_posts_url)
     same_url = list(set(A_posts_url_list).intersection(set(B_posts_url_list)))
     same_url_count = len(same_url)
     # print(f"same_url_count: {same_url_count}")
@@ -261,8 +288,9 @@ def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users,debug = 
     sim_con = 0.1 * rw_score + 0.3 * same_url_count + 0.5 * direct_url_count + 0.4 * direct_refer_score + 0.1 * hashtag_score
     # 计算指数
     p = 1 - np.exp(-1 * sal_factor - KOL_inf * sim_con)
+
     # print(f"p: {p}")
-    def print_data(debug = False):
+    def print_data(debug=False):
         if debug:
             print("====================================================================================")
             print(f"A: {A_posts.shape[0]} ,B: {B_posts.shape[0]}")
@@ -273,32 +301,35 @@ def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users,debug = 
             print(f"same_url_count: {same_url_count}")
             print(f"direct_url_count: {direct_url_count}")
             print(f"direct_refer_score: {direct_refer_score}")
-            print(f"A engagement: {Inf_posts_num}, fan > 500: {InfAccts}, max_Inf_post: {max_Inf_post_num}, max_fan > 500: {max_InfAccts}")
+            print(
+                f"A engagement: {Inf_posts_num}, fan > 500: {InfAccts}, max_Inf_post: {max_Inf_post_num}, max_fan > 500: {max_InfAccts}")
             print(f"inf_post:{inf_post},inf_acct:{inf_acct}")
             print(f"KOL_inf: {KOL_inf}")
             print(f"p: {p}")
             print("====================================================================================")
+
     print_data(debug)
     return p, rw_res, hashtag_res
 
 
 if __name__ == '__main__':
-    df_all_posts = pd.read_csv('all_posts.csv',dtype={'user_id': str, 'post_id': str})
+    df_all_posts = pd.read_csv('all_posts.csv', dtype={'user_id': str, 'post_id': str})
     df_all_posts.where(df_all_posts.notnull(), None)
-    df_all_accounts = pd.read_csv('all_accounts.csv',dtype={'user_id': str})
+    df_all_accounts = pd.read_csv('all_accounts.csv', dtype={'user_id': str})
     df_all_accounts.where(df_all_accounts.notnull(), None)
     hash_table = [
-    ('Great_Wave_Kanagawa', "2021-04-20", "2021-04-29"),
-    ('foreign_affairs_questions', '2021-04-20','2021-04-29'),
-    ('japan_nuclear_wastewater','2021-04-20','2021-04-29'),
-    ('radioactive_condemn_water', '2021-04-20','2021-04-29'),
-    ('240_china_nuclear_pollution','2023-08-21','2023-08-30'),
-    ('70_billion_japan_water', '2023-08-21','2023-08-30'),
-    ('cooling_water_nuclear_wastewater', '2023-08-21','2023-08-30'),
-    ('south_korea_nuclear_discharge', '2023-08-21','2023-08-30'),
-    ('sue_TEPCO_japan', '2023-08-21','2023-08-30'),
-    ('radioactive_pollution_japan_sea', '2023-08-21','2023-08-30'),
-    ('treatment_japan_waste_nuclear', '2023-08-21','2023-08-30')
+        ('Great_Wave_Kanagawa', "2021-04-20", "2021-04-29"),
+        ('foreign_affairs_questions', '2021-04-20', '2021-04-29'),
+        ('japan_nuclear_wastewater', '2021-04-20', '2021-04-29'),
+        ('radioactive_condemn_water', '2021-04-20', '2021-04-29'),
+        ('240_china_nuclear_pollution', '2023-08-21', '2023-08-30'),
+        ('70_billion_japan_water', '2023-08-21', '2023-08-30'),
+        ('cooling_water_nuclear_wastewater', '2023-08-21', '2023-08-30'),
+        ('south_korea_nuclear_discharge', '2023-08-21', '2023-09-01'),
+        ('sue_TEPCO_japan', '2023-08-21', '2023-08-30'),
+        ('radioactive_pollution_japan_sea', '2023-08-21', '2023-08-30'),
+        ('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30'),
+        ('japan_dead_fish', '2023-12-01', '2023-12-10'),
     ]
     cluster_names = [item[0] for item in hash_table]
     # 提取中间一列作为 Python 列表
@@ -314,16 +345,21 @@ if __name__ == '__main__':
         print(f"============== cluster: {cluster} ====================")
         cycle = 10
         df_data = df_all_posts[df_all_posts['cluster'] == cluster]
-        p1,_,_ = cal_cluster_factor(A,B,df_data,end_time,cycle,df_all_posts,df_all_accounts,debug)
-        p2,_,_ = cal_cluster_factor(B,A,df_data,end_time,cycle,df_all_posts,df_all_accounts,debug)
+        if idx == 11:
+            isFake = True
+        else:
+            isFake = False
+        p1, _, _ = cal_cluster_factor(A, B, df_data, end_time, cycle, df_all_posts, df_all_accounts,isFake, debug)
+        p2, _, _ = cal_cluster_factor(B, A, df_data, end_time, cycle, df_all_posts, df_all_accounts, isFake,debug)
         if p1 > p2:
             print(f"$$$$$$ {A}------>{B} $$$$$$ p = {p1}  $$$$$$")
-            output[cluster].append([A,B,p1])
+            output[cluster].append([A, B, p1])
         else:
             print(f"$$$$$$ {B}------>{A} $$$$$$ p = {p2}  $$$$$$")
-            output[cluster].append([B,A,p2])
+            output[cluster].append([B, A, p2])
     # 保存结果
     import json
+
     with open('case1_cluster.json', 'w') as f:
         json.dump(output, f)
 
