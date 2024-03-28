@@ -676,6 +676,27 @@ class DataBase:
             if item['width'] > 0.5:
                 output.append(item)
                 continue
+        json_data = self.case_posts_other
+        output_all_other = json_data[cluster]
+
+        # 该cluster的数据长度
+        len_cluster = time_window_post_count
+        # 现在传入的数据长度
+        input_len = 0
+        for key,value in flower_posts.items():
+            input_len += len(value)
+        # 比例
+        ratio = input_len / len_cluster
+        # 背景的数据的长度
+        bg_length = len(output_all_other)
+        # 应该传出的数据长度
+        output_len = int(bg_length * ratio) - len(output)
+        for item in output_all_other:
+            if item['width'] > 0.5:
+                output.append(item)
+                if len(output) > output_len:
+                    break
+                continue
         return output
 
     def get_history_relevance(self, platform_list, event, date, cycle, soure, target):
