@@ -240,23 +240,6 @@
         },
         {
             "source": {
-                "id": "1732700473504026880",
-                "platform": "twitter",
-                "highlight": [],
-                "text": "NEW: Massive number of dead fish washing up along the coast of northern Japan https://t.co/nO13wxMdvG"
-            },
-            "target": {
-                "id": "4976380540619588",
-                "platform": "weibo",
-                "highlight": [],
-                "text": "大量死鱼被冲上日本北部海岸，在北海道有渔民去捡拾能够食用的死鱼。 日媒称气温变化造成沙丁鱼、鲭鱼成片升天，也有日本市民质疑是“近海的海水出现了问题”。  #日本一海岸现大量沙丁鱼尸体# "
-            },
-            "width": 0.7732409711428587,
-            "diffusion_pattern": 1,
-            "is_assigned": true
-        },
-        {
-            "source": {
                 "id": "4976380540619588",
                 "platform": "weibo",
                 "highlight": [],
@@ -424,23 +407,6 @@
             "width": 0.7732289727280043,
             "diffusion_pattern": 1,
             "is_assigned": false
-        },
-        {
-            "source": {
-                "id": "4976380540619588",
-                "platform": "weibo",
-                "highlight": [],
-                "text": "大量死鱼被冲上日本北部海岸，在北海道有渔民去捡拾能够食用的死鱼。 日媒称气温变化造成沙丁鱼、鲭鱼成片升天，也有日本市民质疑是“近海的海水出现了问题”。  #日本一海岸现大量沙丁鱼尸体# "
-            },
-            "target": {
-                "id": "1732758151764807694",
-                "platform": "twitter",
-                "highlight": [],
-                "text": "Hokkaido, Japan. A large number of dead fish washed up on the beach by the waves, picked up and sold by local fishermen.😱 https://t.co/0xUruXLoD4"
-            },
-            "width": 0.7872029462779021,
-            "diffusion_pattern": 1,
-            "is_assigned": true
         }
     ]
 }
