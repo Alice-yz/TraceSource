@@ -129,9 +129,9 @@ class DataBase:
             "water": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12]
         }
         self.platforms = ["weibo", "twitter", "facebook"]
-        self.case_posts = json.load(open('./data/case1/case1_post.json', 'r', encoding='utf-8'))
+        self.case_posts = json.load(open('./data/case1/case1_post_new.json', 'r', encoding='utf-8'))
         self.case_clusters = json.load(open('./data/case1/case1_cluster.json', 'r', encoding='utf-8'))
-        self.case_posts_other = json.load(open('./data/case1/post_other.json', 'r', encoding='utf-8'))
+        self.case_posts_other = json.load(open('./data/case1/post_other_new.json', 'r', encoding='utf-8'))
 
 
 
