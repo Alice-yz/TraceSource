@@ -6,7 +6,7 @@ import os
 
 cp = APIRouter()
 # print(os.getcwd())
-db = database.DataBase('./data/case1/all_posts.csv','./data/case1/all_accounts.csv')
+db = database.DataBase('./data/case1/all_posts_new.csv','./data/case1/all_accounts.csv')
 
 class TimeLineRequest(BaseModel):
     names: List[str]
