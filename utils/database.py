@@ -716,6 +716,8 @@ class DataBase:
                 t_post_trans = t_post['text_trans']
                 item['source']['text_trans'] = s_post_trans
                 item['target']['text_trans'] = t_post_trans
+                item['source']['publish_time'] = s_post['publish_time']
+                item['target']['publish_time'] = t_post['publish_time']
                 output.append(item)
                 continue
             if item['width'] > 0.6:
@@ -727,6 +729,8 @@ class DataBase:
                 t_post_trans = t_post['text_trans']
                 item['source']['text_trans'] = s_post_trans
                 item['target']['text_trans'] = t_post_trans
+                item['source']['publish_time'] = s_post['publish_time']
+                item['target']['publish_time'] = t_post['publish_time']
                 output.append(item)
                 continue
         json_data = self.case_posts_other
@@ -755,6 +759,8 @@ class DataBase:
                 t_post_trans = t_post['text_trans']
                 item['source']['text_trans'] = s_post_trans
                 item['target']['text_trans'] = t_post_trans
+                item['source']['publish_time'] = s_post['publish_time']
+                item['target']['publish_time'] = t_post['publish_time']
                 output.append(item)
                 continue
         return output
