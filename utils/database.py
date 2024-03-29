@@ -387,6 +387,25 @@ class DataBase:
         df_data = df_data[df_data['from'] == platform]
         freq_list = freq.get_word_freq_list(df_data['text_trans'])  # [(word,number),...]
         output = []
+
+
+
+
+        num = 3
+        cluster_name_list = cluster.split('_')
+        word_name_list = [item[0] for item in freq_list]
+        alreay_idx = []
+        for name in cluster_name_list:
+            if name in word_name_list:
+                idx = word_name_list.index(name)
+                alreay_idx.append(idx)
+                continue
+            else:
+                for i in range(len(word_name_list)):
+                    if i not in alreay_idx:
+                        freq_list[i] = (name, freq_list[i][1])
+                        alreay_idx.append(i)
+                        break
         for text, number in freq_list:
             output.append({
                 'text': text,

@@ -71,6 +71,8 @@ def cal_history_hashtag(s_history_post, t_history_post):
     t_history_post_hashtag = find_hashtags(t_history_post, 'text_trans').tolist()
     s_history_post_hashtag = [item for sublist in s_history_post_hashtag for item in sublist]
     t_history_post_hashtag = [item for sublist in t_history_post_hashtag for item in sublist]
+    if len(s_history_post_hashtag) == 0 or len(t_history_post_hashtag) == 0:
+        return [], []
     embed_s = model.encode(s_history_post_hashtag, convert_to_tensor=True)
     embed_t = model.encode(t_history_post_hashtag, convert_to_tensor=True)
     cosine_scores = util.pytorch_cos_sim(embed_s, embed_t)
