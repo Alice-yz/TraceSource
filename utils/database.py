@@ -65,7 +65,7 @@ def tgt_post(user,post):
     new_post = {}
     new_post['id'] = post['post_id']
     new_post['user_id'] = post['user_id']
-    new_post['avatar'] = post['avatar']
+    new_post['avatar'] = user['avatar']
     if post['from'] == 'weibo':
         new_post['screen_name'] = None
     else:
