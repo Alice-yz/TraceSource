@@ -742,6 +742,8 @@ class DataBase:
                 output.append(item)
                 continue
         json_data = self.case_posts_other
+        if cluster not in json_data:
+            return output
         output_all_other = json_data[cluster]
         # 该cluster的数据长度
         len_cluster = time_window_post_count
