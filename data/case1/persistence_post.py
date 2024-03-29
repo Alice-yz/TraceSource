@@ -159,9 +159,8 @@ def cal_post_factor(post_A, post_B, df_data, self, debug=False):
     special_score, special_words = check_special_info(s_post['text_trans'])
     for word in special_words:
         s_special_begin_idx = s_post['text_trans'].find(word)
-
         s_special_end_idx = s_special_begin_idx + len(word)
-
+        print(f"Debug: {s_special_begin_idx},{s_special_end_idx},{word},{s_post['text_trans'][s_special_begin_idx:s_special_end_idx]}")
         s_highlight.append({
             "begin": s_special_begin_idx,
             "end": s_special_end_idx
@@ -172,6 +171,7 @@ def cal_post_factor(post_A, post_B, df_data, self, debug=False):
     for word in special_words:
         t_special_begin_idx = t_post['text_trans'].find(word)
         t_special_end_idx = t_special_begin_idx + len(word)
+        print(f"Debug: {t_special_begin_idx},{t_special_end_idx},{word},{t_post['text_trans'][t_special_begin_idx:t_special_end_idx]}")
         t_highlight.append({
             "begin": t_special_begin_idx,
             "end": t_special_end_idx
