@@ -362,7 +362,7 @@ if __name__ == '__main__':
         17: ('republican_primary', '2023-12-21', '2024-03-25'),
         18: ('democratic_primary', '2023-12-21', '2024-03-25'),
         19: ('desantis_quit', '2023-12-21', '2024-03-25'),
-        20: ('trump_plead_not_guilty', '2023-12-21', '2024-03-25')
+        20: ('trump_plead_not_guilty', '2023-08-01', '2023-08-10')
     }
 
     cluster_names = [cluster_dict[i][0] for i in range(1, 21)]
@@ -376,14 +376,16 @@ if __name__ == '__main__':
         output[cluster] = []
         A = 'weibo'
         B = 'twitter'
-
         AB_list = [['twitter', 'weibo'], ['facebook', 'twitter'], ['facebook', 'weibo']]
         for i in range(3):
             A = AB_list[i][0]
             B = AB_list[i][1]
             print(f"============== cluster: {cluster} ,platform:{A},{B}====================")
             # 计算end_time - start_time的天数
+            # end时间加一天
+            end_time = (pd.to_datetime(end_time) + pd.Timedelta(days=1)).strftime('%Y-%m-%d')
             cycle = (pd.to_datetime(end_time) - pd.to_datetime(start_time)).days
+            print(cycle)
             df_data = df_all_posts[df_all_posts['cluster'] == cluster]
             if idx == 11:
                 isFake = True

@@ -369,7 +369,7 @@ def format_post(s_post, t_post, s_highlight, t_highlight, factor, diffusion_patt
 
 
 if __name__ == '__main__':
-    df_all_posts = pd.read_csv('all_posts.csv', dtype={'user_id': str, 'post_id': str})
+    df_all_posts = pd.read_csv('all_posts_new.csv', dtype={'user_id': str, 'post_id': str})
     df_all_posts.where(df_all_posts.notnull(), None)
     df_all_accounts = pd.read_csv('all_accounts.csv', dtype={'user_id': str})
     df_all_accounts.where(df_all_accounts.notnull(), None)
@@ -408,12 +408,12 @@ if __name__ == '__main__':
         17: ('republican_primary', '2023-12-21', '2024-03-25'),
         18: ('democratic_primary', '2023-12-21', '2024-03-25'),
         19: ('desantis_quit', '2023-12-21', '2024-03-25'),
-        20: ('trump_plead_not_guilty', '2023-12-21', '2024-03-25')
+        20: ('trump_plead_not_guilty', '2023-08-01', '2023-08-10')
     }
     cluster_names =  [cluster_dict[i][0] for i in range(1, 21)]
     # 提取中间一列作为 Python 列表
     # debug = True
-    for idx in range(13,21):
+    for idx in range(20,21):
         # idx = 11
         output_cluster = []
         start_time = cluster_dict[idx][1]

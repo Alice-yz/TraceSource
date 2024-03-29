@@ -111,21 +111,29 @@ class DataBase:
         self.event = ["US2024Election", "Water"]
 
         self.cluster_dict = {
-            1:('Great_Wave_Kanagawa', "2021-04-20", "2021-04-29"),
-            2:('foreign_affairs_questions', '2021-04-20', '2021-04-29'),
-            3:('japan_nuclear_wastewater', '2021-04-20', '2021-04-29'),
-            4:('radioactive_condemn_water', '2021-04-20', '2021-04-29'),
-            5:('240_china_nuclear_pollution', '2023-08-21', '2023-08-30'),
-            6:('70_billion_japan_water', '2023-08-21', '2023-08-30'),
-            7:('cooling_water_nuclear_wastewater', '2023-08-21', '2023-08-30'),
-            8:('south_korea_nuclear_discharge', '2023-08-21', '2023-09-01'),
-            9:('sue_TEPCO_japan', '2023-08-21', '2023-08-30'),
-            10:('radioactive_pollution_japan_sea', '2023-08-21', '2023-08-30'),
-            11:('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30'),
-            12: ('japan_dead_fish', '2023-12-01', '2023-12-10')
+            1: ('Great_Wave_Kanagawa', "2021-04-20", "2021-04-29"),
+            2: ('foreign_affairs_questions', '2021-04-20', '2021-04-29'),
+            3: ('japan_nuclear_wastewater', '2021-04-20', '2021-04-29'),
+            4: ('radioactive_condemn_water', '2021-04-20', '2021-04-29'),
+            5: ('240_china_nuclear_pollution', '2023-08-21', '2023-08-30'),
+            6: ('70_billion_japan_water', '2023-08-21', '2023-08-30'),
+            7: ('cooling_water_nuclear_wastewater', '2023-08-21', '2023-08-30'),
+            8: ('south_korea_nuclear_discharge', '2023-08-21', '2023-09-01'),
+            9: ('sue_TEPCO_japan', '2023-08-21', '2023-08-30'),
+            10: ('radioactive_pollution_japan_sea', '2023-08-21', '2023-08-30'),
+            11: ('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30'),
+            12: ('japan_dead_fish', '2023-12-01', '2023-12-10'),
+            13: ('border_...', '2023-12-21', '2024-03-25'),
+            14: ('maga_win_trump_king', '2023-12-21', '2024-03-25'),
+            15: ('trump_primary_ballot', '2023-12-21', '2024-03-25'),
+            16: ('trump_more_votes_win', '2023-12-21', '2024-03-25'),
+            17: ('republican_primary', '2023-12-21', '2024-03-25'),
+            18: ('democratic_primary', '2023-12-21', '2024-03-25'),
+            19: ('desantis_quit', '2023-12-21', '2024-03-25'),
+            20: ('trump_plead_not_guilty', '2023-08-01', '2023-08-10')
         }
         self.event_dict = {
-            "election": [],
+            "election": [13,14,15,16,17,18,19,20],
             "water": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12]
         }
         self.platforms = ["weibo", "twitter", "facebook"]
