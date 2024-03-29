@@ -1666,8 +1666,8 @@
                 ],
                 "text": "Trump's comments -https://twitter.com/charlie.../status/1763313878329618674..."
             },
-            "width": 0.08349771774367898,
-            "diffusion_pattern": 1,
+            "width": 0.0834747847461812,
+            "diffusion_pattern": 2,
             "is_assigned": false
         },
         {
@@ -3282,5 +3282,23 @@
     "republican_primary": [],
     "democratic_primary": [],
     "desantis_quit": [],
-    "trump_plead_not_guilty": []
+    "trump_plead_not_guilty": [
+        {
+            "source": {
+                "id": "1687215745770323968",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "川普总统对所有指控不认罪并回应起诉：“这对美国来说是非常悲伤的一天。开车穿过DC，看到肮脏和腐烂，这也是非常悲伤的……这不是我离开时的地方。“这是对在共和党初选中以大量票数领先并大幅领先拜登的人的迫害。因此，如果你能击败他们，他们就迫害你或起诉你。我们不能让这种情况在美国发生。 ” https://t.co/Hj5muOxVkM"
+            },
+            "target": {
+                "id": "tgzyyjpost",
+                "platform": "facebook",
+                "highlight": [],
+                "text": "川普总统对所有指控不认罪并回应起诉“这对美国来说是非常悲伤的一天。开车穿过DC，看到肮脏和腐烂，这也是非常悲伤的……这不是我离开时的地方。“这是对在共和党初选中以大量票数领先并大幅领先拜登的人的迫害。因此，如果你能击败他们，他们就迫害你或起诉你。我们不能让这种情况在美国发生。 ”"
+            },
+            "width": 0.851002253274923,
+            "diffusion_pattern": 0,
+            "is_assigned": false
+        }
+    ]
 }

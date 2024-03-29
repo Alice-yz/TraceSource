@@ -123,7 +123,7 @@ class DataBase:
             10: ('radioactive_pollution_japan_sea', '2023-08-21', '2023-08-30'),
             11: ('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30'),
             12: ('japan_dead_fish', '2023-12-01', '2023-12-10'),
-            13: ('border_...', '2023-12-21', '2024-03-25'),
+            13: ('border_united_texas_trump', '2023-12-21', '2024-03-25'),
             14: ('maga_win_trump_king', '2023-12-21', '2024-03-25'),
             15: ('trump_primary_ballot', '2023-12-21', '2024-03-25'),
             16: ('trump_more_votes_win', '2023-12-21', '2024-03-25'),
