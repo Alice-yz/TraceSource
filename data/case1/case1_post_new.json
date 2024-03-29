@@ -2454,7 +2454,7 @@
             },
             "width": 0.8380867864315966,
             "diffusion_pattern": 2,
-            "is_assigned": false
+            "is_assigned": true
         },
         {
             "source": {
@@ -2585,7 +2585,7 @@
             },
             "width": 0.8690536603522889,
             "diffusion_pattern": 1,
-            "is_assigned": false
+            "is_assigned": true
         },
         {
             "source": {
@@ -2711,7 +2711,7 @@
             },
             "width": 0.6316357267225906,
             "diffusion_pattern": 1,
-            "is_assigned": false
+            "is_assigned": true
         },
         {
             "source": {
@@ -2820,7 +2820,7 @@
             },
             "width": 0.6324028031012625,
             "diffusion_pattern": 1,
-            "is_assigned": false
+            "is_assigned": true
         },
         {
             "source": {
@@ -2951,7 +2951,7 @@
             },
             "width": 0.8248560305999357,
             "diffusion_pattern": 1,
-            "is_assigned": false
+            "is_assigned": true
         },
         {
             "source": {
@@ -3082,7 +3082,7 @@
             },
             "width": 0.7261257558868698,
             "diffusion_pattern": 1,
-            "is_assigned": false
+            "is_assigned": true
         },
         {
             "source": {
