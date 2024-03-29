@@ -388,41 +388,63 @@ if __name__ == '__main__':
         ('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30'),
         ('japan_dead_fish', '2023-12-01', '2023-12-10'),
     ]
-    cluster_names = [item[0] for item in hash_table]
+    cluster_dict = {
+        1: ('Great_Wave_Kanagawa', "2021-04-20", "2021-04-29"),
+        2: ('foreign_affairs_questions', '2021-04-20', '2021-04-29'),
+        3: ('japan_nuclear_wastewater', '2021-04-20', '2021-04-29'),
+        4: ('radioactive_condemn_water', '2021-04-20', '2021-04-29'),
+        5: ('240_china_nuclear_pollution', '2023-08-21', '2023-08-30'),
+        6: ('70_billion_japan_water', '2023-08-21', '2023-08-30'),
+        7: ('cooling_water_nuclear_wastewater', '2023-08-21', '2023-08-30'),
+        8: ('south_korea_nuclear_discharge', '2023-08-21', '2023-09-01'),
+        9: ('sue_TEPCO_japan', '2023-08-21', '2023-08-30'),
+        10: ('radioactive_pollution_japan_sea', '2023-08-21', '2023-08-30'),
+        11: ('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30'),
+        12: ('japan_dead_fish', '2023-12-01', '2023-12-10'),
+        13: ('border_...', '2023-12-21', '2024-03-25'),
+        14: ('maga_win_trump_king', '2023-12-21', '2024-03-25'),
+        15: ('trump_primary_ballot', '2023-12-21', '2024-03-25'),
+        16: ('trump_more_votes_win', '2023-12-21', '2024-03-25'),
+        17: ('republican_primary', '2023-12-21', '2024-03-25'),
+        18: ('democratic_primary', '2023-12-21', '2024-03-25'),
+        19: ('desantis_quit', '2023-12-21', '2024-03-25'),
+        20: ('trump_plead_not_guilty', '2023-12-21', '2024-03-25')
+    }
+    cluster_names =  [cluster_dict[i][0] for i in range(1, 21)]
     # 提取中间一列作为 Python 列表
     # debug = True
-    for idx in range(len(hash_table)):
-        if idx == 1 or idx == 2 or idx == 3 or idx == 9 or idx == 10:
-            continue
+    for idx in range(13,21):
         # idx = 11
         output_cluster = []
-        start_time = hash_table[idx][1]
-        end_time = hash_table[idx][2]
-        cluster = cluster_names[idx]
+        start_time = cluster_dict[idx][1]
+        end_time = cluster_dict[idx][2]
+        cluster = cluster_dict[idx][0]
         # end_time 加一天
         end_time = (pd.to_datetime(end_time) + pd.DateOffset(days=1)).strftime('%Y-%m-%d')
-        A = 'weibo'
-        B = 'twitter'
-        df_data = df_all_posts[
-            (df_all_posts['publish_time'] >= start_time) & (df_all_posts['publish_time'] <= end_time)]
-        df_data = df_data[df_data['query'] == 'highlight']
-        df_data = df_data[df_data['cluster'] == cluster]
-        df_data_A = df_data[df_data['from'] == A]
-        df_data_B = df_data[df_data['from'] == B]
-        print(f"Cluster: {cluster}  df_data shape: {df_data.shape[0]} df_data_A shape: {df_data_A.shape[0]} df_data_B shape: {df_data_B.shape[0]}")
-        debug = False
-        for idx_a in range(df_data_A.shape[0]):
-            for idx_b in range(df_data_B.shape[0]):
-                factor, s_post, t_post, s_highlight, t_highlight, diffusion_pattern = cal_post_factor(
-                    df_data_A.iloc[idx_a], df_data_B.iloc[idx_b], df_data, debug, debug)
-                print(f"Cluster: {cluster}({idx_a},{idx_b})-|- {s_post['from']}-->{t_post['from']} ,Factor: {factor} Diffusion Pattern Type: {diffusion_pattern}")
-                # print(f"source:{s_post['text']}")
-                # print(f"target:{t_post['text']}")
-                # input_str =  input("Enter y is assigned, n is not assigned:\n")
-                # is_assigned = True if input_str == 'y' else False
-                output_cluster.append(format_post(s_post, t_post, s_highlight, t_highlight, factor, diffusion_pattern,False))
-                # print(is_assigned)
-        output[cluster] = output_cluster
+        AB_list = [['twitter', 'weibo'], ['facebook', 'twitter'],['facebook','weibo']]
+        for i in range(3):
+            A = AB_list[i][0]
+            B = AB_list[i][1]
+            df_data = df_all_posts[
+                (df_all_posts['publish_time'] >= start_time) & (df_all_posts['publish_time'] <= end_time)]
+            df_data = df_data[df_data['query'] == 'highlight']
+            df_data = df_data[df_data['cluster'] == cluster]
+            df_data_A = df_data[df_data['from'] == A]
+            df_data_B = df_data[df_data['from'] == B]
+            print(f"=============Cluster: {cluster}  df_data shape: {df_data.shape[0]} df_data_A shape: {df_data_A.shape[0]} df_data_B shape: {df_data_B.shape[0]}========")
+            debug = False
+            for idx_a in range(df_data_A.shape[0]):
+                for idx_b in range(df_data_B.shape[0]):
+                    factor, s_post, t_post, s_highlight, t_highlight, diffusion_pattern = cal_post_factor(
+                        df_data_A.iloc[idx_a], df_data_B.iloc[idx_b], df_data, debug, debug)
+                    print(f"Cluster: {cluster}({idx_a},{idx_b})-|- {s_post['from']}-->{t_post['from']} ,Factor: {factor} Diffusion Pattern Type: {diffusion_pattern}")
+                    # print(f"source:{s_post['text']}")
+                    # print(f"target:{t_post['text']}")
+                    # input_str =  input("Enter y is assigned, n is not assigned:\n")
+                    # is_assigned = True if input_str == 'y' else False
+                    output_cluster.append(format_post(s_post, t_post, s_highlight, t_highlight, factor, diffusion_pattern,False))
+                    # print(is_assigned)
+            output[cluster] = output_cluster
     # 写入文件
-    with open(f'./json/post_PPT.json', 'w',encoding='utf-8') as f:
+    with open(f'./json/post_case2_ppt.json', 'w',encoding='utf-8') as f:
         f.write(json.dumps(output, ensure_ascii=False,indent=4))

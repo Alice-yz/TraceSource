@@ -270,6 +270,11 @@ def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users, isFake,
     A_user = A_posts['user_id'].drop_duplicates().tolist()
     # 在self.all_users中找出这些账号
     A_user_info = all_users[all_users['user_id'].isin(A_user)]
+    for i in range(A_user_info.shape[0]):
+        if type(A_user_info.iloc[i]['fan']) != type(str):
+            A_user_info.iloc[i]['fan'] = 0
+        else:
+            A_user_info.iloc[i]['fan'] = int(A_user_info.iloc[i]['fan'])
     A_user_info['fan'] = A_user_info['fan'].astype(int)
     # 找出粉丝数量大于500的账号
     InfAccts = A_user_info[A_user_info['fan'] > 500].shape[0]
@@ -277,6 +282,12 @@ def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users, isFake,
     max_Inf_post_num = max_Inf_post.shape[0]
     all_A_user = all_A_posts['user_id'].drop_duplicates().tolist()
     all_A_user_info = all_users[all_users['user_id'].isin(all_A_user)]
+    # 首先查找所有fan都是str的账号
+    for i in range(all_A_user_info.shape[0]):
+        if type(all_A_user_info.iloc[i]['fan']) != type(str):
+            all_A_user_info.iloc[i]['fan'] = 0
+        else:
+            all_A_user_info.iloc[i]['fan'] = int(all_A_user_info.iloc[i]['fan'])
     all_A_user_info['fan'] = all_A_user_info['fan'].astype(int)
     max_InfAccts = all_A_user_info[all_A_user_info['fan'] > 500].shape[0]
     inf_post = 0 if (max_Inf_post_num == 0) else (Inf_posts_num / max_Inf_post_num)
@@ -313,7 +324,7 @@ def cal_cluster_factor(A, B, df_data, date, cycle, all_posts, all_users, isFake,
 
 
 if __name__ == '__main__':
-    df_all_posts = pd.read_csv('all_posts.csv', dtype={'user_id': str, 'post_id': str})
+    df_all_posts = pd.read_csv('all_posts_new.csv', dtype={'user_id': str, 'post_id': str})
     df_all_posts.where(df_all_posts.notnull(), None)
     df_all_accounts = pd.read_csv('all_accounts.csv', dtype={'user_id': str})
     df_all_accounts.where(df_all_accounts.notnull(), None)
@@ -331,36 +342,65 @@ if __name__ == '__main__':
         ('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30'),
         ('japan_dead_fish', '2023-12-01', '2023-12-10'),
     ]
-    cluster_names = [item[0] for item in hash_table]
+    cluster_dict = {
+        1: ('Great_Wave_Kanagawa', "2021-04-20", "2021-04-29"),
+        2: ('foreign_affairs_questions', '2021-04-20', '2021-04-29'),
+        3: ('japan_nuclear_wastewater', '2021-04-20', '2021-04-29'),
+        4: ('radioactive_condemn_water', '2021-04-20', '2021-04-29'),
+        5: ('240_china_nuclear_pollution', '2023-08-21', '2023-08-30'),
+        6: ('70_billion_japan_water', '2023-08-21', '2023-08-30'),
+        7: ('cooling_water_nuclear_wastewater', '2023-08-21', '2023-08-30'),
+        8: ('south_korea_nuclear_discharge', '2023-08-21', '2023-09-01'),
+        9: ('sue_TEPCO_japan', '2023-08-21', '2023-08-30'),
+        10: ('radioactive_pollution_japan_sea', '2023-08-21', '2023-08-30'),
+        11: ('treatment_japan_waste_nuclear', '2023-08-21', '2023-08-30'),
+        12: ('japan_dead_fish', '2023-12-01', '2023-12-10'),
+        13: ('border_...', '2023-12-21', '2024-03-25'),
+        14: ('maga_win_trump_king', '2023-12-21', '2024-03-25'),
+        15: ('trump_primary_ballot', '2023-12-21', '2024-03-25'),
+        16: ('trump_more_votes_win', '2023-12-21', '2024-03-25'),
+        17: ('republican_primary', '2023-12-21', '2024-03-25'),
+        18: ('democratic_primary', '2023-12-21', '2024-03-25'),
+        19: ('desantis_quit', '2023-12-21', '2024-03-25'),
+        20: ('trump_plead_not_guilty', '2023-12-21', '2024-03-25')
+    }
+
+    cluster_names = [cluster_dict[i][0] for i in range(1, 21)]
     # 提取中间一列作为 Python 列表
     debug = False
     output = {}
-    for idx in range(len(hash_table)):
-        start_time = hash_table[idx][1]
-        end_time = hash_table[idx][2]
-        cluster = cluster_names[idx]
+    for idx in range(13,21):
+        start_time = cluster_dict[idx][1]
+        end_time = cluster_dict[idx][2]
+        cluster = cluster_dict[idx][0]
         output[cluster] = []
         A = 'weibo'
         B = 'twitter'
-        print(f"============== cluster: {cluster} ====================")
-        cycle = 10
-        df_data = df_all_posts[df_all_posts['cluster'] == cluster]
-        if idx == 11:
-            isFake = True
-        else:
-            isFake = False
-        p1, _, _ = cal_cluster_factor(A, B, df_data, end_time, cycle, df_all_posts, df_all_accounts,isFake, debug)
-        p2, _, _ = cal_cluster_factor(B, A, df_data, end_time, cycle, df_all_posts, df_all_accounts, isFake,debug)
-        if p1 > p2:
-            print(f"$$$$$$ {A}------>{B} $$$$$$ p = {p1}  $$$$$$")
-            output[cluster].append([A, B, p1])
-        else:
-            print(f"$$$$$$ {B}------>{A} $$$$$$ p = {p2}  $$$$$$")
-            output[cluster].append([B, A, p2])
+
+        AB_list = [['twitter', 'weibo'], ['facebook', 'twitter'], ['facebook', 'weibo']]
+        for i in range(3):
+            A = AB_list[i][0]
+            B = AB_list[i][1]
+            print(f"============== cluster: {cluster} ,platform:{A},{B}====================")
+            # 计算end_time - start_time的天数
+            cycle = (pd.to_datetime(end_time) - pd.to_datetime(start_time)).days
+            df_data = df_all_posts[df_all_posts['cluster'] == cluster]
+            if idx == 11:
+                isFake = True
+            else:
+                isFake = False
+            p1, _, _ = cal_cluster_factor(A, B, df_data, end_time, cycle, df_all_posts, df_all_accounts,isFake, debug)
+            p2, _, _ = cal_cluster_factor(B, A, df_data, end_time, cycle, df_all_posts, df_all_accounts, isFake,debug)
+            if p1 > p2:
+                print(f"$$$$$$ {A}------>{B} $$$$$$ p = {p1}  $$$$$$")
+                output[cluster].append([A, B, p1])
+            else:
+                print(f"$$$$$$ {B}------>{A} $$$$$$ p = {p2}  $$$$$$")
+                output[cluster].append([B, A, p2])
     # 保存结果
     import json
 
-    with open('case1_cluster.json', 'w') as f:
+    with open('case2_cluster.json', 'w') as f:
         json.dump(output, f)
 
     # idx = 3
