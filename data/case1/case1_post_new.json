@@ -3741,7 +3741,7 @@
             "is_assigned": false
         },
         {
-            "source": {
+            "target": {
                 "id": "ColeenMPpost",
                 "platform": "facebook",
                 "highlight": [
@@ -3752,7 +3752,7 @@
                 ],
                 "text": "Trump's comments -https://twitter.com/charlie.../status/1763313878329618674..."
             },
-            "target": {
+            "source": {
                 "id": "1763313878329618674",
                 "platform": "twitter",
                 "highlight": [],
@@ -4336,6 +4336,23 @@
             "width": 0.6686315962559115,
             "diffusion_pattern": 1,
             "is_assigned": false
+        },
+        {
+            "source":{
+                "id": "1763313547314897302",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "This is what a real LEADER looks like.The PEOPLE are with DONALD J. TRUMP.https://t.co/lZ20odjPwm"
+            },
+            "target":{
+                "id":"VincentVict555post",
+                "platform":"facebook",
+                "highlight":[],
+                "text":"This is what a real LEADER looks like.The US🇺🇸 PEOPLE are with President DONALD J. TRUMP.https://twitter.com/GrahamAllen_1/status/1763313547314897302"
+            },
+            "width": 0.6546844224,
+            "diffusion_pattern": 2,
+            "is_assigned": true
         }
     ],
     "maga_win_trump_king": [
@@ -4354,7 +4371,7 @@
             },
             "width": 0.8853678429084149,
             "diffusion_pattern": 0,
-            "is_assigned": false
+            "is_assigned": true
         },
         {
             "source": {
@@ -4371,8 +4388,9 @@
             },
             "width": 0.3637240202323134,
             "diffusion_pattern": 2,
-            "is_assigned": false
+            "is_assigned": true
         }
+
     ],
     "trump_primary_ballot": [
         {
@@ -4577,7 +4595,7 @@
             "is_assigned": false
         },
         {
-            "source": {
+            "target": {
                 "id": "4984707741914903",
                 "platform": "weibo",
                 "highlight": [
@@ -4592,7 +4610,7 @@
                 ],
                 "text": "【该不该拦下特朗普，美国缅因州民主党分裂了】美国缅因州对共和党人特朗普“重拳出击”后，有民主党人不干了。  据美国《国会山报》12月29日报道，缅因州参议员安格斯·金（Angus King）对于将美国前总统特朗普从该州选票中移除的决定，表示不同意。他称，要不要给个机会考虑让他重返白宫，“应该留给民众决定”。  当地时间12月28日，继科罗拉多州之后，缅因州选举官员也宣布取消特朗普参加明年该州共和党内总统候选人初选的资格。不同于科罗拉多州最高法院做出的判决，它并没有经过相对较长的法律流程，而是由州一级官员做出。  缅因州州务卿、民主党人申娜·贝洛斯（Shenna Bellows）表示，“我不是轻易得出这个结论的，民主是神圣的……我注意到，没有任何州务卿曾根据第14修正案第三节剥夺总统候选人参与初选的权利。然而，我也注意到，以前没有任何总统候选人参与过叛乱。”  29日，缅因州参议员安格斯·金在声明中说：“尽管我尊重州务卿的谨慎程序，这是缅因州法律对她的明确要求，但这缺乏关于违反美国宪法第14修正案中取消资格条款的最终裁定。我认为，关于特朗普是否可以再次成为总统的考虑人选，应该留给民众通过自由公正的选举表达意见。”  在2021年对特朗普的第二次弹劾案中，安格斯·金投票支持就2021年1月6日国会大厦遇袭事件对特朗普定罪。来自缅因州的民主党籍众议员贾里德·戈尔登（Jared Golden）同样投票支持2021年弹劾案，这次对缅因州州务卿的决定表达了与安格斯·金类似的情绪。他称美国是一个“法治国家”，“因此，在特朗普被证实犯有叛乱罪之前，应该允许他出现在选票上。”  另一位缅因州参议员苏珊·柯林斯（Susan Collins）来自共和党，她在推特上做出了相似回应，她说：“州务卿的决定将剥夺成千上万缅因州人投票给他们所选择候选人的机会，应该推翻这一决定。”  由于缅因州从1992年以来的总统大选中都是民主党候选人获胜，并不属于重要的战场州，且缅因州在美国总统大选中只有四张选举人票，预期这番变动对于总统选举的最终影响将相对有限。而特朗普团队如果要申请取消该项裁决，预计需要先向州一级法院、而不是更加亲共和党的联邦最高法院申请否决这项决定。  如果这项裁决最终确定会影响特朗普在该州的党内初选资格，不排除民主党会在其他州初选前推动类似限制，以扩大对特朗普初选的干扰，进而影响特朗普获得共和党内2024总统候选人提名。目前，在2024年共和党候选人的民意调查中，特朗普大幅领先。"
             },
-            "target": {
+            "source": {
                 "id": "1762994942278774854",
                 "platform": "twitter",
                 "highlight": [
@@ -4885,7 +4903,7 @@
                 ],
                 "text": "伊利诺伊州法官下令将唐纳德·特朗普从初选名单中除名。（来源:X原推特） "
             },
-            "width": 0.09372295821083265,
+            "width": 0.69372295821083265,
             "diffusion_pattern": 1,
             "is_assigned": false
         },
@@ -5712,5 +5730,24 @@
     "republican_primary": [],
     "democratic_primary": [],
     "desantis_quit": [],
-    "trump_plead_not_guilty": []
+    "trump_plead_not_guilty": [
+        {
+            "source": {
+                "id": "1687215745770323968",
+                "platform": "twitter",
+                "highlight": [],
+                "text": "川普总统对所有指控不认罪并回应起诉：“这对美国来说是非常悲伤的一天。开车穿过DC，看到肮脏和腐烂，这也是非常悲伤的……这不是我离开时的地方。“这是对在共和党初选中以大量票数领先并大幅领先拜登的人的迫害。因此，如果你能击败他们，他们就迫害你或起诉你。我们不能让这种情况在美国发生。 ” https://t.co/Hj5muOxVkM"
+            },
+            "target": {
+                "id": "tgzyyjpost",
+                "platform": "facebook",
+                "highlight": [
+                ],
+                "text": ""
+            },
+            "width": 0.8710003516606287,
+            "diffusion_pattern": 1,
+            "is_assigned": true
+        }
+    ]
 }
