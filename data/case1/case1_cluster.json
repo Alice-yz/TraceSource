@@ -17,5 +17,6 @@
     "trump_more_votes_win": [["twitter", "weibo", 0.9324488386043782], ["twitter", "facebook", 0.48371692093844085], ["facebook", "weibo", 0.09984281791549582]], 
     "republican_primary": [["twitter", "weibo", 0.5302306914714322], [ "twitter", "facebook",0.47349242532119982], ["facebook", "weibo", 0.3865676674995084]], 
     "democratic_primary": [["twitter", "weibo", 0.9924848104361081], ["twitter","facebook",  0.5956881199685806], ["facebook", "weibo", 0.8294794982366763]], 
-    "desantis_quit": [[ "twitter","weibo", 0.88284177849935115], ["twitter", "facebook", 0.160766532832559395], ["facebook", "weibo", 0.13025381618828336]]
+    "desantis_quit": [[ "twitter","weibo", 0.88284177849935115], ["twitter", "facebook", 0.160766532832559395], ["facebook", "weibo", 0.13025381618828336]],
+    "trump_plead_not_guilty": [["twitter", "facebook", 0.1101125]]
 }
