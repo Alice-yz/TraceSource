@@ -728,7 +728,7 @@ class DataBase:
                 item['target']['publish_time'] = t_post['publish_time']
                 output.append(item)
                 continue
-            if item['width'] > 0.6:
+            if item['width'] > 0.999:
                 s_post_id = item['source']['id']
                 t_post_id = item['target']['id']
                 s_post = self.all_posts[self.all_posts['post_id'] == s_post_id].iloc[0]
