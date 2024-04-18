@@ -6,7 +6,7 @@ import os
 
 cp = APIRouter()
 # print(os.getcwd())
-db = database.DataBase('./data/case1/all_posts_new.csv','./data/case1/all_accounts.csv')
+db = database.DataBase('./data/all_posts.csv','./data/all_accounts.csv')
 
 class TimeLineRequest(BaseModel):
     names: List[str]
@@ -29,7 +29,6 @@ class FlowerRequest(BaseModel):
     topic: str = None
     start: str = None
     end: str = None
-
 
 @cp.post("/time_line/")
 async def get_post_count(request: TimeLineRequest):
