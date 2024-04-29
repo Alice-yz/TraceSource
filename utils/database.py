@@ -8,6 +8,7 @@ import numpy as np
 from utils import cal_cluster_factor as ccf
 from utils import cluster_level_main_view_layout as clmvl
 from utils import cal_post_factor as cpf
+from utils import cal_post_factor_inside_platform as cpfip
 from utils import lda
 import json
 
@@ -940,15 +941,47 @@ class DataBase:
         output[t_platform] = lda.get_lda_message(t_all_posts)
         return output
 
+    def cal_post_factor_inside_platform(self,debug=False):
+        """
+        计算两个帖子的相关性
+        """
+        # 计算两个帖子的相关性
+        cluster_list = [
+                'Great_Wave_Kanagawa',
+                '240_china_nuclear_pollution',
+                'cooling_water_nuclear_wastewater',
+                '70_billion_japan_water',
+                'sue_TEPCO_japan',
+                'south_korea_nuclear_discharge',
+                'japan_dead_fish',
+                'border_united_texas_trump'
+            ]
+        platform_list = ['weibo', 'twitter', 'facebook']
+        result = {topic: {'weibo':[], 'twitter':[], 'facebook':[]} for topic in cluster_list}
+        for topic in cluster_list:
+            posts = self.all_posts[self.all_posts['cluster'] == topic]
+            for platform in platform_list:
+                print(f"topic: {topic}, platform: {platform}")
+                platform_posts = posts[posts['from'] == platform]
+                for (idx_A,post_A) in platform_posts.iterrows():
+                    for (idx_B,post_B) in platform_posts.iterrows():
+                        if idx_B <= idx_A:
+                            continue
+                        p,post_rel,special_score,s_post,t_post = cpfip.cal_post_factor(post_A, post_B, platform_posts, self, debug)
+                        print(f"post_A: {post_A['post_id']}, post_B: {post_B['post_id']}, p: {p}, 'post_rel':{post_rel}")
+                        result[topic][platform].append({'likelihood': p, 'post_rel':post_rel, 'special_score':special_score,'src_post_id': s_post['post_id'], 'src_post_text': s_post['text'],'tgt_post_id': t_post['post_id'], 'tgt_post_text': t_post['text']})
+        json.dump(result, open('data/post_factor_ip.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=4)
+
+        return
 
 if __name__ == '__main__':
-    db = DataBase('../data/ttest.csv', '../data/user_info.csv')
-    # 把db.all_posts单数行的“from”换位“weibo”
-    for index, row in db.all_posts.iterrows():
-        if index % 3 == 0:
-            db.all_posts.at[index, 'from'] = 'weibo'
-        if index % 3 == 1:
-            db.all_posts.at[index, 'from'] = 'facebook'
+    # db = DataBase('../data/ttest.csv', '../data/user_info.csv')
+    # # 把db.all_posts单数行的“from”换位“weibo”
+    # for index, row in db.all_posts.iterrows():
+    #     if index % 3 == 0:
+    #         db.all_posts.at[index, 'from'] = 'weibo'
+    #     if index % 3 == 1:
+    #         db.all_posts.at[index, 'from'] = 'facebook'
     # print(db.get_topic(['weibo', 'facebook'], 'election', '2024-03-01', 1))
     # print(db.get_flower(['weibo','twitter'], 'water', '2023-09-01', 10))
     # print(db.get_topic_info(['twitter'], 'water', '2023-09-01', 10))
@@ -964,3 +997,6 @@ if __name__ == '__main__':
     # print(db.get_history_relevance('election', 'election', '2024-02-01', 10,'1749159384112845285','1749131121114091648'))
     # print(db.get_interest_distribution(['weibo', 'twitter'], 'election', '2024-04-01', 10000, '2467791', '2836421'))
     #
+    db = DataBase('../data/filtered_posts.csv', '../data/all_accounts.csv')
+    db.cal_post_factor_inside_platform()
+
